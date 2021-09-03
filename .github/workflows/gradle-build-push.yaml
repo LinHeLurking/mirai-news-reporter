@@ -1,6 +1,8 @@
 # .github/workflows/gradle-build-push.yml
 name: Run Gradle Push
-on: pull_request
+on:
+  push:
+    branches: [ main ]
 jobs:
   gradle:
     strategy:
