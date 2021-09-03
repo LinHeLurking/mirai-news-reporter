@@ -5,6 +5,7 @@ plugins {
     kotlin("plugin.serialization") version "1.5.20"
 
     id("net.mamoe.mirai-console") version "2.7.0"
+    `maven-publish`
 }
 
 group = "online.ruin_of_future"
@@ -27,5 +28,16 @@ tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
 //        kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
         jvmTarget = "11"
+    }
+}
+
+tasks {
+    val sourcesJar by creating(Jar::class) {
+        archiveClassifier.set("sources")
+        from(sourceSets.main.get().allSource)
+    }
+
+    artifacts {
+        archives(sourcesJar)
     }
 }
