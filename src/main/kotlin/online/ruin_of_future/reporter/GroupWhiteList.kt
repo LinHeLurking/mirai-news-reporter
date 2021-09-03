@@ -12,7 +12,7 @@ import net.mamoe.mirai.contact.Group
 object ReporterGroupCommand : CompositeCommand(
     ReporterPlugin,
     "reporter_group", "日报群组", // "manage" 是主指令名
-    description = "管理日报群组白名单"
+    description = "每日新闻播报的群组白名单管理"
 ) {
     @SubCommand("list", "显示", "展示", "show")
     suspend fun CommandSender.list() {
