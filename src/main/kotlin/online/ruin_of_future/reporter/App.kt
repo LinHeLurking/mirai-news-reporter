@@ -34,6 +34,7 @@ object ReporterPlugin : KotlinPlugin(
     val animeCrawler = AnimeCrawler()
     override fun onEnable() {
         NewsGroupWhiteList.reload()
+        AnimeGroupWhiteList.reload()
 
         CommandManager.registerCommand(NewsGroupCommand)
         CommandManager.registerCommand(AnimeGroupCommand)
