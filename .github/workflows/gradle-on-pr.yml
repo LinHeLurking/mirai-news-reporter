@@ -24,9 +24,8 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew buildPlugin
-      - name: Create a Release
-        uses: elgohr/Github-Release-Action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+      - uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          args: Automatic release by workflow.
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: ./build/mirai/*.jar
