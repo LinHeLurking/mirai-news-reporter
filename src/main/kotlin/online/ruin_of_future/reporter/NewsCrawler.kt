@@ -23,11 +23,13 @@ class NewsCrawler {
 
     private val byteArrayCache = Cached(byteArrayOf(), 1000 * 60 * 60 * 4L)
 
+    private val font = Font
+        .createFont(Font.TRUETYPE_FONT, this.javaClass.getResourceAsStream("/chinese_font.ttf"))
+        .deriveFont(25f)
 
     @Throws(IOException::class)
     suspend fun newsToday(): ByteArray {
         if (byteArrayCache.isNotOutdated()) {
-            LogManager.getLogManager().getLogger("").info("Return using cached results")
             return byteArrayCache.value
         }
 
@@ -88,9 +90,7 @@ class NewsCrawler {
             newsTextStringBuilder.append("\n")
         }
         val newsText = newsTextStringBuilder.toString()
-        val font = Font
-            .createFont(Font.TRUETYPE_FONT, this.javaClass.getResourceAsStream("/chinese_font.ttf"))
-            .deriveFont(25f)
+
         val imgWidth = 860
         val newsImg = ImageIO.read(URL(newsImgUrl))
         val scaledImgHeight = newsImg.height * imgWidth / newsImg.width
@@ -146,7 +146,6 @@ class NewsCrawler {
         val os = ByteArrayOutputStream()
         ImageIO.write(bufferedImage, "png", os)
         byteArrayCache.value = os.toByteArray()
-        LogManager.getLogManager().getLogger("").info("Return using newly requested results")
         return byteArrayCache.value
     }
 }

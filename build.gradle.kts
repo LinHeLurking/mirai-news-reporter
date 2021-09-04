@@ -23,6 +23,7 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.9.1")
     implementation("org.jsoup:jsoup:1.14.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
 }
 
 tasks.withType<KotlinCompile>().configureEach {
