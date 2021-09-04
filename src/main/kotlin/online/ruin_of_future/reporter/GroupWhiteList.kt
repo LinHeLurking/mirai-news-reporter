@@ -132,10 +132,10 @@ object AnimeGroupCommand : CompositeCommand(
     @SubCommand("list", "显示", "展示", "show")
     suspend fun CommandSender.list() {
         if (this is UserCommandSender) {
-            listWhiteList(bot, user.asCommandSender(true), NewsGroupWhiteList.groupIdsPerBot)
+            listWhiteList(bot, user.asCommandSender(true), AnimeGroupWhiteList.groupIdsPerBot)
         } else if (this is ConsoleCommandSender) {
             for (bot in Bot.instances) {
-                listWhiteList(bot, this, NewsGroupWhiteList.groupIdsPerBot)
+                listWhiteList(bot, this, AnimeGroupWhiteList.groupIdsPerBot)
             }
         }
     }
