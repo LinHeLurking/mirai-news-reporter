@@ -2,7 +2,7 @@
 name: Build & Release On PR
 on:
   workflow_dispatch:
-  push:
+  pull_request:
     branches: [ main ]
 jobs:
   gradle:
