@@ -6,8 +6,6 @@ import net.mamoe.mirai.console.data.AutoSavePluginConfig
 import net.mamoe.mirai.console.data.value
 import net.mamoe.mirai.console.util.ConsoleExperimentalApi
 import net.mamoe.mirai.contact.Group
-import net.mamoe.mirai.utils.MiraiLogger
-import java.util.logging.LogManager
 
 
 @OptIn(ConsoleExperimentalApi::class)
