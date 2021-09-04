@@ -1,5 +1,6 @@
 package online.ruin_of_future.reporter
 
+import net.mamoe.mirai.utils.MiraiLogger
 import java.io.IOException
 import org.jsoup.Jsoup
 import java.awt.Color
@@ -9,6 +10,7 @@ import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.net.URL
+import java.util.logging.LogManager
 import javax.imageio.ImageIO
 import kotlin.math.min
 
@@ -18,15 +20,17 @@ class NewsCrawler {
 
     private val entryUrl: String = "https://www.zhihu.com/people/mt36501"
 
-    private var byteArrayCache = byteArrayOf()
-    private var cacheTimeStamp: Long = 0
-    private val expirePeriod: Long = 1000 * 60 * 60 * 4
 
+    private val byteArrayCache = Cached(byteArrayOf(), 1000 * 60 * 60 * 4L)
+
+    private val font = Font
+        .createFont(Font.TRUETYPE_FONT, this.javaClass.getResourceAsStream("/chinese_font.ttf"))
+        .deriveFont(25f)
 
     @Throws(IOException::class)
     suspend fun newsToday(): ByteArray {
-        if (cacheTimeStamp + expirePeriod > System.currentTimeMillis()) {
-            return byteArrayCache
+        if (byteArrayCache.isNotOutdated()) {
+            return byteArrayCache.value
         }
 
         val entryPageDoc = Jsoup.parse(httpGetter.get(entryUrl))
@@ -86,9 +90,7 @@ class NewsCrawler {
             newsTextStringBuilder.append("\n")
         }
         val newsText = newsTextStringBuilder.toString()
-        val font = Font
-            .createFont(Font.TRUETYPE_FONT, this.javaClass.getResourceAsStream("/chinese_font.ttf"))
-            .deriveFont(25f)
+
         val imgWidth = 860
         val newsImg = ImageIO.read(URL(newsImgUrl))
         val scaledImgHeight = newsImg.height * imgWidth / newsImg.width
@@ -143,6 +145,7 @@ class NewsCrawler {
         g.dispose()
         val os = ByteArrayOutputStream()
         ImageIO.write(bufferedImage, "png", os)
-        return os.toByteArray()
+        byteArrayCache.value = os.toByteArray()
+        return byteArrayCache.value
     }
 }

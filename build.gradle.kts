@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "online.ruin_of_future"
-version = "1.0-SNAPSHOT"
+version = "1.1"
 
 repositories {
     maven(url = "https://maven.aliyun.com/repository/public")
@@ -23,6 +23,7 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.9.1")
     implementation("org.jsoup:jsoup:1.14.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
 }
 
 tasks.withType<KotlinCompile>().configureEach {
