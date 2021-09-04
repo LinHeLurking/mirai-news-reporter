@@ -1,5 +1,5 @@
 # .github/workflows/gradle-build-push.yml
-name: Run Gradle Push
+name: Build Test On Push
 on:
   push:
     branches: [ main ]
@@ -19,4 +19,4 @@ jobs:
       - name: Build with Gradle
         run: |
           chmod +x ./gradlew
-          ./gradlew build
+          ./gradlew buildPlugin
