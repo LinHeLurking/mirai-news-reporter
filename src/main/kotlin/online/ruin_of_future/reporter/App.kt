@@ -24,7 +24,7 @@ fun main(args: Array<String>) {
 object ReporterPlugin : KotlinPlugin(
     JvmPluginDescription(
         id = "online.ruin_of_future.reporter",
-        version = "1.1.0",
+        version = "1.2.0",
     ) {
         name("Reporter")
         author("LinHeLurking")
