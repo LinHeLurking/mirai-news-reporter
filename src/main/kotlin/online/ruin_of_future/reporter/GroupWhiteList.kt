@@ -70,7 +70,7 @@ private suspend fun listWhiteList(
 }
 
 @OptIn(ConsoleExperimentalApi::class)
-object ReporterGroupCommand : CompositeCommand(
+object NewsGroupCommand : CompositeCommand(
     ReporterPlugin,
     "news_group", "新闻群组", // "manage" 是主指令名
     description = "每日新闻播报的群组白名单管理"
@@ -121,10 +121,62 @@ object ReporterGroupCommand : CompositeCommand(
     }
 }
 
+@OptIn(ConsoleExperimentalApi::class)
+object AnimeGroupCommand : CompositeCommand(
+    ReporterPlugin,
+    "anime_group", "动画群组", // "manage" 是主指令名
+    description = "每日动画播报的群组白名单管理"
+) {
+
+
+    @SubCommand("list", "显示", "展示", "show")
+    suspend fun CommandSender.list() {
+        if (this is UserCommandSender) {
+            listWhiteList(bot, user.asCommandSender(true), NewsGroupWhiteList.groupIdsPerBot)
+        } else if (this is ConsoleCommandSender) {
+            for (bot in Bot.instances) {
+                listWhiteList(bot, this, NewsGroupWhiteList.groupIdsPerBot)
+            }
+        }
+    }
+
+    @SubCommand("add", "添加")
+    suspend fun CommandSender.add(target: Group) {
+        if (this is UserCommandSender) {
+            addWhiteList(
+                bot,
+                user.asCommandSender(true),
+                target,
+                AnimeGroupWhiteList.groupIdsPerBot
+            )
+        } else if (this is ConsoleCommandSender) {
+            for (bot in Bot.instances) {
+                addWhiteList(
+                    bot,
+                    this,
+                    target,
+                    AnimeGroupWhiteList.groupIdsPerBot
+                )
+            }
+        }
+    }
+
+    @SubCommand("delete", "remove", "删除", "移除")
+    suspend fun CommandSender.remove(target: Group) {
+        if (this is UserCommandSender) {
+            removeWhiteList(bot, user.asCommandSender(true), target, AnimeGroupWhiteList.groupIdsPerBot)
+        } else {
+            for (bot in Bot.instances) {
+                removeWhiteList(bot, this, target, AnimeGroupWhiteList.groupIdsPerBot)
+            }
+        }
+    }
+}
+
 object NewsGroupWhiteList : AutoSavePluginConfig("newsGroupWhiteList") {
     val groupIdsPerBot: MutableMap<Long, MutableList<Long>> by value()
 }
 
-object BangumiGroupWhiteList : AutoSavePluginConfig("bangumiGroupWhiteList") {
+object AnimeGroupWhiteList : AutoSavePluginConfig("bangumiGroupWhiteList") {
     val groupIdsPerBot: MutableMap<Long, MutableList<Long>> by value()
 }

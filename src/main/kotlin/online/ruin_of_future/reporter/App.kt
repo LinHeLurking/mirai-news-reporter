@@ -35,7 +35,8 @@ object ReporterPlugin : KotlinPlugin(
     override fun onEnable() {
         NewsGroupWhiteList.reload()
 
-        CommandManager.registerCommand(ReporterGroupCommand)
+        CommandManager.registerCommand(NewsGroupCommand)
+        CommandManager.registerCommand(AnimeGroupCommand)
 
         this.launch {
             while (true) {
@@ -100,7 +101,7 @@ object ReporterPlugin : KotlinPlugin(
             matching(Regex("(每日|今日)?(新番|番剧|动画)")) {
                 logger.info("$senderName 发起了动画请求...")
                 launch {
-                    if (NewsGroupWhiteList.groupIdsPerBot.contains(group.id)) {
+                    if (AnimeGroupWhiteList.groupIdsPerBot.contains(group.id)) {
                         try {
                             group.sendImage(ByteArrayInputStream(animeCrawler.animeToday()))
                         } catch (e: Exception) {
