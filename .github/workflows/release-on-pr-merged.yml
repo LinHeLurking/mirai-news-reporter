@@ -1,12 +1,9 @@
 # .github/workflows/gradle-build-push.yml
-name: Release On PR Merged
+name: Release Manually
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [ main ]
 jobs:
   gradle:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Git Checkout
