@@ -1,5 +1,5 @@
 # .github/workflows/gradle-build-push.yml
-name: Build & Release On PR
+name: Build On PR
 on:
   workflow_dispatch:
   pull_request:
@@ -24,10 +24,3 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew buildPlugin
-      - uses: "marvinpinto/action-automatic-releases@latest"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          prerelease: true
-          title: "Automatic Development Build"
-          files: ./build/mirai/*.jar
