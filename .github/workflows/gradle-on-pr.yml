@@ -1,5 +1,5 @@
 # .github/workflows/gradle-build-push.yml
-name: Build Test On Push
+name: Build & Release On PR
 on:
   workflow_dispatch:
   push:
