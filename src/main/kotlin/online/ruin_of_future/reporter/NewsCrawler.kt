@@ -7,7 +7,7 @@ import java.awt.Font
 import java.awt.Image.SCALE_SMOOTH
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
-import java.io.File
+import java.io.ByteArrayOutputStream
 import java.net.URL
 import javax.imageio.ImageIO
 import kotlin.math.min
@@ -18,8 +18,17 @@ class NewsCrawler {
 
     private val entryUrl: String = "https://www.zhihu.com/people/mt36501"
 
+    private var byteArrayCache = byteArrayOf()
+    private var cacheTimeStamp: Long = 0
+    private val expirePeriod: Long = 1000 * 60 * 60 * 4
+
+
     @Throws(IOException::class)
-    suspend fun newsToday(): BufferedImage {
+    suspend fun newsToday(): ByteArray {
+        if (cacheTimeStamp + expirePeriod > System.currentTimeMillis()) {
+            return byteArrayCache
+        }
+
         val entryPageDoc = Jsoup.parse(httpGetter.get(entryUrl))
         var todayUrl: String = entryPageDoc.select("h2.ContentItem-title a[href]").first()?.attr("href")
             ?: throw IOException("Failed to get url!")
@@ -28,7 +37,6 @@ class NewsCrawler {
         }
         val newsDoc = Jsoup.parse(httpGetter.get(todayUrl))
         val newsNode = newsDoc.select("div.RichText.ztext.Post-RichText.css-hnrfcf")
-//        println(newsNode)
         val newsImgUrl = newsNode.select("figure noscript img").attr("src")
         val newsTextElement = newsNode.select("p")
         val newsTextStringBuilder = StringBuilder()
@@ -133,7 +141,8 @@ class NewsCrawler {
             }
         }
         g.dispose()
-        ImageIO.write(bufferedImage, "png", File("text.png"))
-        return bufferedImage
+        val os = ByteArrayOutputStream()
+        ImageIO.write(bufferedImage, "png", os)
+        return os.toByteArray()
     }
 }

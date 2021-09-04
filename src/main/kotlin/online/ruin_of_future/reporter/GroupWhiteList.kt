@@ -6,6 +6,8 @@ import net.mamoe.mirai.console.data.AutoSavePluginConfig
 import net.mamoe.mirai.console.data.value
 import net.mamoe.mirai.console.util.ConsoleExperimentalApi
 import net.mamoe.mirai.contact.Group
+import net.mamoe.mirai.utils.MiraiLogger
+import java.util.logging.LogManager
 
 
 @OptIn(ConsoleExperimentalApi::class)
@@ -17,11 +19,12 @@ object ReporterGroupCommand : CompositeCommand(
     @SubCommand("list", "显示", "展示", "show")
     suspend fun CommandSender.list() {
         val resStrBuilder = StringBuilder()
-        if (groupWhiteList.isEmpty()) {
+        if (GroupWhiteList.isEmpty()) {
             resStrBuilder.append("白名单为空呢 >_<")
         } else {
-            for (groupId in groupWhiteList) {
+            for (groupId in GroupWhiteList) {
                 resStrBuilder.append(groupId)
+                resStrBuilder.append('\n')
             }
         }
         sendMessage(resStrBuilder.toString())
@@ -29,13 +32,19 @@ object ReporterGroupCommand : CompositeCommand(
 
     @SubCommand("add", "添加")
     suspend fun CommandSender.add(target: Group) {
-        groupWhiteList.add(target.id)
+        GroupWhiteList.add(target.id)
         sendMessage("添加 ${target.name} 成功")
+    }
+
+    @SubCommand("delete", "remove", "删除", "移除")
+    suspend fun CommandSender.remove(target: Group) {
+        GroupWhiteList.remove(target.id)
+        sendMessage("移除 ${target.name} 成功")
     }
 }
 
 
-object groupWhiteList : AutoSavePluginConfig("groupWhiteList") {
+object GroupWhiteList : AutoSavePluginConfig("groupWhiteList") {
     private val groupIds: MutableList<Long> by value()
     fun get(i: Int): Long {
         return groupIds[i]
@@ -56,9 +65,14 @@ object groupWhiteList : AutoSavePluginConfig("groupWhiteList") {
         return groupIds.isEmpty()
     }
 
-    fun add(elem: Long) {
-        groupIds.add(elem)
+    fun add(elem: Long): Boolean {
+        return groupIds.add(elem)
     }
+
+    fun remove(elem: Long): Boolean {
+        return groupIds.remove(elem)
+    }
+
 
     operator fun iterator(): Iterator<Long> {
         return object : Iterator<Long> {
