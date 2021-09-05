@@ -1,5 +1,5 @@
-# .github/workflows/auto-prerelease.yml
-name: Release Automatically
+# .github/workflows/auto-prerelease-on-tag-push.yml
+name: Release Automatically On Tag Push
 on:
   push:
     tags:
