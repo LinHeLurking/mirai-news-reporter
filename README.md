@@ -1,2 +1,13 @@
-# mirai-news-reporter
-一个简单的每日新闻速报 mirai-console 插件
+# Mirai News Reporter
+一个简单的每日新闻速报/番剧速报 mirai-console 插件
+
+# 项目地址:
+
+https://github.com/LinHeLurking/mirai-news-reporter
+
+# 功能
+
+1. 爬取知乎的一个每日新闻页面, 以图片形式分享. 向机器人说 "今日新闻", "今日速报" 即可触发.
+2. 爬取 B 站的今日番剧列表, 以图片形式分享. 用 "今日动画", "今日番剧" 触发.
+
+> 为了避免打扰网友, 群聊使用白名单管理. 只有通过命令指定的群聊, 才会在群聊中触发本机器人. 具体命令可以通过 /help 获取.
