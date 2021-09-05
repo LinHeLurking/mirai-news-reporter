@@ -82,7 +82,7 @@ class AnimeCrawler {
     }
 
     private fun buildImageByteArray(animeInfos: List<AnimeInfo>): ByteArray {
-        val hBorderWidth = 20
+        val hBorderWidth = 18
         val previewHeight = 600
         val oneAnimeHeight = previewHeight + 2 * hBorderWidth
         val totalImgHeight = animeInfos.size * oneAnimeHeight
