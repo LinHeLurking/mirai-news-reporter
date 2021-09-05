@@ -24,7 +24,7 @@ fun main(args: Array<String>) {
 object ReporterPlugin : KotlinPlugin(
     JvmPluginDescription(
         id = "online.ruin_of_future.reporter",
-        version = "1.2.1",
+        version = "1.2.3",
     ) {
         name("Reporter")
         author("LinHeLurking")
@@ -49,9 +49,25 @@ object ReporterPlugin : KotlinPlugin(
                             for (groupId in NewsGroupWhiteList.groupIdsPerBot[it.id]!!) {
                                 try {
                                     val group = it.getGroup(groupId)
+                                    group?.sendMessage("早上好呀, 这是今天的新闻速报 q(≧▽≦q)")
                                     group?.sendImage(ByteArrayInputStream(newsCrawler.newsToday()))
                                     logger.info(
                                         "Daily news push to group " +
+                                                (group?.name ?: "<No group of ${groupId}> from ${it.id}")
+                                    )
+                                } catch (e: Exception) {
+                                    logger.error(e)
+                                }
+                            }
+                        }
+                        if (it.id in NewsGroupWhiteList.groupIdsPerBot) {
+                            for (groupId in NewsGroupWhiteList.groupIdsPerBot[it.id]!!) {
+                                try {
+                                    val group = it.getGroup(groupId)
+                                    group?.sendMessage("早上好呀, 这是今天的 B 站番剧 ( •̀ ω •́ )✧")
+                                    group?.sendImage(ByteArrayInputStream(animeCrawler.animeToday()))
+                                    logger.info(
+                                        "Daily anime push to group " +
                                                 (group?.name ?: "<No group of ${groupId}> from ${it.id}")
                                     )
                                 } catch (e: Exception) {
@@ -69,7 +85,7 @@ object ReporterPlugin : KotlinPlugin(
             matching(Regex("(每日|今日)?(新闻|速报|速递)")) {
                 logger.info("$senderName 发起了新闻请求...")
                 launch {
-                    if (NewsGroupWhiteList.groupIdsPerBot.contains(group.id)) {
+                    if (NewsGroupWhiteList.groupIdsPerBot[bot.id]?.contains(group.id) == true) {
                         try {
                             group.sendImage(ByteArrayInputStream(newsCrawler.newsToday()))
                         } catch (e: Exception) {
@@ -102,7 +118,7 @@ object ReporterPlugin : KotlinPlugin(
             matching(Regex("(每日|今日)?(新番|番剧|动画)")) {
                 logger.info("$senderName 发起了动画请求...")
                 launch {
-                    if (AnimeGroupWhiteList.groupIdsPerBot.contains(group.id)) {
+                    if (AnimeGroupWhiteList.groupIdsPerBot[bot.id]?.contains(group.id) == true) {
                         try {
                             group.sendImage(ByteArrayInputStream(animeCrawler.animeToday()))
                         } catch (e: Exception) {
