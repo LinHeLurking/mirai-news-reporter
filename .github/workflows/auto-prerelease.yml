@@ -2,13 +2,6 @@
 name: Release Automatically on tag push
 on:
   push:
-    branches:
-      - main
-    tags:
-      - v*
-  pull_request:
-    branches:
-      - main
     tags:
       - v*
 jobs:
