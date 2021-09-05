@@ -1,4 +1,4 @@
-# .github/workflows/gradle-build-push.yml
+# .github/workflows/release-manually.yml
 name: Release Manually
 on:
   workflow_dispatch:
