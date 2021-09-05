@@ -1,9 +1,7 @@
-# .github/workflows/gradle-build-push.yml
-name: Build On PR
+# .github/workflows/release-manually.yml
+name: Release Manually
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [ main ]
 jobs:
   gradle:
     runs-on: ubuntu-latest
@@ -21,3 +19,11 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew buildPlugin
+      - name: Create Release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: false
+          title: "Latest Stable version"
+          files: ./build/mirai/*.jar
