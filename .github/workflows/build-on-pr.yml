@@ -1,4 +1,4 @@
-# .github/workflows/gradle-build-push.yml
+# .github/workflows/build-on-pr.yml
 name: Build On PR
 on:
   workflow_dispatch:
