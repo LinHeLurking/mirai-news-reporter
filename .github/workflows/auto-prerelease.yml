@@ -4,13 +4,8 @@ on:
   push:
     tags:
       - v*
-  pull_request:
-    types: [closed]
-    branches:
-      - main
 jobs:
   gradle:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Git Checkout
