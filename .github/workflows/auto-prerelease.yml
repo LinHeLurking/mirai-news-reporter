@@ -11,6 +11,10 @@ jobs:
     steps:
       - name: Git Checkout
         uses: actions/checkout@v2
+      - name: Set env
+        run: |
+          echo "RELEASE_VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+          echo "${{ env.RELEASE_VERSION }}"
       - name: Gradle Wrapper Validation
         uses: gradle/wrapper-validation-action@v1.0.4
       - name: Set up JDK 11
@@ -22,8 +26,6 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew buildPlugin
-      - name: Set env
-        run: echo "RELEASE_VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
       - name: Create Release
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
