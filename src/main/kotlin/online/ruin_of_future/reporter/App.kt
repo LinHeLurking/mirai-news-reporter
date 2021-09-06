@@ -19,7 +19,7 @@ import java.time.LocalDateTime
 object ReporterPlugin : KotlinPlugin(
     JvmPluginDescription(
         id = "online.ruin_of_future.reporter",
-        version = "1.2.6",
+        version = "1.2.7",
     ) {
         name("Reporter")
         author("LinHeLurking")
@@ -53,6 +53,7 @@ object ReporterPlugin : KotlinPlugin(
                                 } catch (e: Exception) {
                                     logger.error(e)
                                 }
+                                delay(100)
                             }
                         }
                         if (it.id in NewsGroupWhiteList.groupIdsPerBot) {
@@ -68,6 +69,7 @@ object ReporterPlugin : KotlinPlugin(
                                 } catch (e: Exception) {
                                     logger.error(e)
                                 }
+                                delay(100)
                             }
                         }
                     }
