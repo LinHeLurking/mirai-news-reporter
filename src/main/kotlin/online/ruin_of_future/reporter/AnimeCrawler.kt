@@ -1,5 +1,6 @@
 package online.ruin_of_future.reporter
 
+import kotlinx.coroutines.delay
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -63,6 +64,8 @@ data class TimeLineInfo(
     val result: List<ResultByDate>
 )
 
+class NoAnimeException(message: String) : Exception(message)
+
 @OptIn(ExperimentalSerializationApi::class)
 class AnimeCrawler {
     private val httpGetter = HTTPGetter()
@@ -81,7 +84,7 @@ class AnimeCrawler {
         return data
     }
 
-    private fun buildImageByteArray(animeInfos: List<AnimeInfo>): ByteArray {
+    private suspend fun buildImageByteArray(animeInfos: List<AnimeInfo>): ByteArray {
         val hBorderWidth = 18
         val previewHeight = 600
         val oneAnimeHeight = previewHeight + 2 * hBorderWidth
@@ -160,6 +163,8 @@ class AnimeCrawler {
             g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
             g.drawString(animeInfo.pubTime.trim(), timeX, timeY)
             g.dispose()
+
+            delay(100)
         }
 
         val os = ByteArrayOutputStream()
@@ -173,15 +178,15 @@ class AnimeCrawler {
         val rawData = getData()
         var dataOnDate: List<AnimeInfo> = listOf()
         for (result in rawData.result) {
-            if (result.date.equals(dateStr)) {
+            if (result.date == dateStr) {
                 dataOnDate = result.seasons
             }
         }
+        // Sometimes it's really empty
         if (dataOnDate.isEmpty()) {
-            throw Exception("Not found info for date: $dateStr")
+            throw NoAnimeException("Not found info for date: $dateStr")
         }
-        val byteArray = buildImageByteArray(dataOnDate)
-        return byteArray
+        return buildImageByteArray(dataOnDate)
     }
 
     @Throws(Exception::class)

@@ -7,24 +7,19 @@ import net.mamoe.mirai.Bot
 import net.mamoe.mirai.console.command.CommandManager
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
+import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.Contact.Companion.sendImage
 import net.mamoe.mirai.event.globalEventChannel
 import net.mamoe.mirai.event.subscribeFriendMessages
 import net.mamoe.mirai.event.subscribeGroupMessages
+import net.mamoe.mirai.utils.MiraiLogger
 import java.io.ByteArrayInputStream
 import java.time.LocalDateTime
-
-fun main(args: Array<String>) {
-    val crawler = NewsCrawler()
-    runBlocking {
-        crawler.newsToday()
-    }
-}
 
 object ReporterPlugin : KotlinPlugin(
     JvmPluginDescription(
         id = "online.ruin_of_future.reporter",
-        version = "1.2.4",
+        version = "1.2.6",
     ) {
         name("Reporter")
         author("LinHeLurking")
@@ -81,32 +76,47 @@ object ReporterPlugin : KotlinPlugin(
             }
         }
 
+        val sendNewsToTarget: suspend (Contact) -> Unit = {
+            try {
+                it.sendMessage("这是今天的新闻速报 q(≧▽≦q)")
+                it.sendImage(ByteArrayInputStream(newsCrawler.newsToday()))
+            } catch (e: Exception) {
+                it.sendMessage("出错啦, 等会再试试吧 ￣へ￣")
+                logger.error(e)
+            }
+        }
+
         this.globalEventChannel().subscribeGroupMessages {
             matching(Regex("(每日|今日)?(新闻|速报|速递)")) {
                 logger.info("$senderName 发起了新闻请求...")
-                launch {
-                    if (NewsGroupWhiteList.groupIdsPerBot[bot.id]?.contains(group.id) == true) {
-                        try {
-                            group.sendImage(ByteArrayInputStream(newsCrawler.newsToday()))
-                        } catch (e: Exception) {
-                            group.sendMessage("出错啦, 等会再试试吧 ￣へ￣")
-                            logger.error(e)
-                        }
-                    } else {
-                        sender.sendMessage("为了防止打扰到网友，这个群不在日报白名单呢 QwQ")
-                    }
+                if (NewsGroupWhiteList.groupIdsPerBot[bot.id]?.contains(group.id) == true) {
+                    sendNewsToTarget(group)
+                } else {
+                    sender.sendMessage("为了防止打扰到网友，这个群不在日报白名单呢 QwQ")
                 }
+
             }
         }
 
         this.globalEventChannel().subscribeFriendMessages {
             matching(Regex("(每日|今日)?(新闻|速报|速递)")) {
                 logger.info("$senderName 发起了新闻请求...")
-                launch {
-                    try {
-                        sender.sendImage(ByteArrayInputStream(newsCrawler.newsToday()))
-                    } catch (e: Exception) {
-                        sender.sendMessage("出错啦, 等会再试试吧 ￣へ￣")
+                sendNewsToTarget(sender)
+            }
+        }
+
+        val sendAnimeToTarget: suspend (Contact) -> Unit = {
+            try {
+                it.sendMessage("这是今天的 B 站番剧 ( •̀ ω •́ )✧")
+                it.sendImage(ByteArrayInputStream(animeCrawler.animeToday()))
+            } catch (e: Exception) {
+                when (e) {
+                    is NoAnimeException -> {
+                        it.sendMessage("好像今天没有放送呢 >_<")
+                        logger.info(e)
+                    }
+                    else -> {
+                        it.sendMessage("出错啦, 等会再试试吧 ￣へ￣")
                         logger.error(e)
                     }
                 }
@@ -117,17 +127,10 @@ object ReporterPlugin : KotlinPlugin(
         this.globalEventChannel().subscribeGroupMessages {
             matching(Regex("(每日|今日)?(新番|番剧|动画)")) {
                 logger.info("$senderName 发起了动画请求...")
-                launch {
-                    if (AnimeGroupWhiteList.groupIdsPerBot[bot.id]?.contains(group.id) == true) {
-                        try {
-                            group.sendImage(ByteArrayInputStream(animeCrawler.animeToday()))
-                        } catch (e: Exception) {
-                            group.sendMessage("出错啦, 等会再试试吧 ￣へ￣")
-                            logger.error(e)
-                        }
-                    } else {
-                        sender.sendMessage("为了防止打扰到网友，这个群不在日报白名单呢 QwQ")
-                    }
+                if (AnimeGroupWhiteList.groupIdsPerBot[bot.id]?.contains(group.id) == true) {
+                    sendAnimeToTarget(group)
+                } else {
+                    sender.sendMessage("为了防止打扰到网友，这个群不在日报白名单呢 QwQ")
                 }
             }
         }
@@ -135,14 +138,7 @@ object ReporterPlugin : KotlinPlugin(
         this.globalEventChannel().subscribeFriendMessages {
             matching(Regex("(每日|今日)?(新番|番剧|动画)")) {
                 logger.info("$senderName 发起了动画请求...")
-                launch {
-                    try {
-                        sender.sendImage(ByteArrayInputStream(animeCrawler.animeToday()))
-                    } catch (e: Exception) {
-                        sender.sendMessage("出错啦, 等会再试试吧 ￣へ￣")
-                        logger.error(e)
-                    }
-                }
+                sendAnimeToTarget(sender)
             }
         }
     }
