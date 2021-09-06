@@ -10,6 +10,7 @@ jobs:
     steps:
       - name: Set env
         run: |
+          echo "$GITHUB_REF"
           echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
           echo "${{ env.RELEASE_VERSION }}"
           [[ "${{ env.RELEASE_VERSION }}" == v* ]] || exit 1
