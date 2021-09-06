@@ -19,7 +19,7 @@ import java.time.LocalDateTime
 object ReporterPlugin : KotlinPlugin(
     JvmPluginDescription(
         id = "online.ruin_of_future.reporter",
-        version = "1.2.7",
+        version = "1.2.8",
     ) {
         name("Reporter")
         author("LinHeLurking")
@@ -37,7 +37,7 @@ object ReporterPlugin : KotlinPlugin(
         this.launch {
             while (true) {
                 val dateTime = LocalDateTime.now()
-                if (dateTime.hour in 7..7 && dateTime.minute in 0..31) {
+                if (dateTime.hour == 7 && dateTime.minute in 0..15) {
                     logger.info("Daily pushing")
                     Bot.instances.forEach {
                         if (it.id in NewsGroupWhiteList.groupIdsPerBot) {
