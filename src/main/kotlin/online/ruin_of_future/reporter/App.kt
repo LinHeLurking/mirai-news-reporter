@@ -37,7 +37,7 @@ object ReporterPlugin : KotlinPlugin(
         this.launch {
             while (true) {
                 val dateTime = LocalDateTime.now()
-                if (dateTime.hour == 7 && dateTime.minute in 0..15) {
+                if (dateTime.hour == 7 && dateTime.minute in 0..32) {
                     logger.info("Daily pushing")
                     Bot.instances.forEach {
                         if (it.id in NewsGroupWhiteList.groupIdsPerBot) {

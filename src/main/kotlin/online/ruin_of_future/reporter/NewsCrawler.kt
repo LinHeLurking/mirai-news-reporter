@@ -1,6 +1,5 @@
 package online.ruin_of_future.reporter
 
-import net.mamoe.mirai.utils.MiraiLogger
 import java.io.IOException
 import org.jsoup.Jsoup
 import java.awt.Color
@@ -10,7 +9,6 @@ import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.net.URL
-import java.util.logging.LogManager
 import javax.imageio.ImageIO
 import kotlin.math.min
 
