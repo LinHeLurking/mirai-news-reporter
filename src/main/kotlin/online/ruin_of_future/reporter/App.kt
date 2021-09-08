@@ -44,7 +44,7 @@ object ReporterPlugin : KotlinPlugin(
                             for (groupId in NewsGroupWhiteList.groupIdsPerBot[it.id]!!) {
                                 try {
                                     val group = it.getGroup(groupId)
-                                    group?.sendMessage("早上好呀, 这是今天的新闻速报 q(≧▽≦q)")
+                                    group?.sendMessage("早上好呀, 这是今天的新闻速报 \nq(≧▽≦q)")
                                     group?.sendImage(ByteArrayInputStream(newsCrawler.newsToday()))
                                     logger.info(
                                         "Daily news push to group " +
@@ -60,7 +60,7 @@ object ReporterPlugin : KotlinPlugin(
                             for (groupId in NewsGroupWhiteList.groupIdsPerBot[it.id]!!) {
                                 try {
                                     val group = it.getGroup(groupId)
-                                    group?.sendMessage("早上好呀, 这是今天的 B 站番剧 ( •̀ ω •́ )✧")
+                                    group?.sendMessage("早上好呀, 这是今天的 B 站番剧 \n( •̀ ω •́ )✧")
                                     group?.sendImage(ByteArrayInputStream(animeCrawler.animeToday()))
                                     logger.info(
                                         "Daily anime push to group " +
@@ -80,7 +80,7 @@ object ReporterPlugin : KotlinPlugin(
 
         val sendNewsToTarget: suspend (Contact) -> Unit = {
             try {
-                it.sendMessage("这是今天的新闻速报 q(≧▽≦q)")
+                it.sendMessage("这是今天的新闻速报 \nq(≧▽≦q)")
                 it.sendImage(ByteArrayInputStream(newsCrawler.newsToday()))
             } catch (e: Exception) {
                 it.sendMessage("出错啦, 等会再试试吧 ￣へ￣")
@@ -109,7 +109,7 @@ object ReporterPlugin : KotlinPlugin(
 
         val sendAnimeToTarget: suspend (Contact) -> Unit = {
             try {
-                it.sendMessage("这是今天的 B 站番剧 ( •̀ ω •́ )✧")
+                it.sendMessage("这是今天的 B 站番剧 \n( •̀ ω •́ )✧")
                 it.sendImage(ByteArrayInputStream(animeCrawler.animeToday()))
             } catch (e: Exception) {
                 when (e) {
