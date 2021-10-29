@@ -21,7 +21,13 @@ import javax.imageio.ImageIO
 data class AnimeInfo(
     @JsonNames("cover")
     val coverURL: String,
-    val delay: Int, // I don't know what it is
+    val delay: Int, // Indicating whether this is delayed this week
+    @JsonNames("delay_id")
+    val delayId: Int = 0, // This is optional. Give it a default value.
+    @JsonNames("delay_index")
+    val delayIndex: String = "", // This is optional. Give it a default value.
+    @JsonNames("delay_reason")
+    val delayReason: String = "", // This is optional. Give it a default value.
     @JsonNames("ep_id")
     val epId: Int,
     val favorites: Int,
@@ -29,7 +35,7 @@ data class AnimeInfo(
     @JsonNames("is_published")
     val isPublished: Int,
     @JsonNames("pub_index")
-    val pubIndex: String,
+    val pubIndex: String = "?", // This will be missing when delay is set. Give it a default value.
     @JsonNames("pub_time")
     val pubTime: String,
     @JsonNames("pub_ts")
@@ -99,6 +105,11 @@ class AnimeCrawler {
         val titleFont = font.deriveFont(40f).deriveFont(Font.BOLD)
 
         animeInfos.forEachIndexed { index, animeInfo ->
+            // Skip delayed episodes
+            if (animeInfo.delay != 0) {
+                return@forEachIndexed
+            }
+
             val curHeight = index * oneAnimeHeight
 
             val imgY = curHeight + hBorderWidth

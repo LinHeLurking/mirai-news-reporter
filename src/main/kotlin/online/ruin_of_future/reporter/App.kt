@@ -19,7 +19,7 @@ import java.time.LocalDateTime
 object ReporterPlugin : KotlinPlugin(
     JvmPluginDescription(
         id = "online.ruin_of_future.reporter",
-        version = "1.2.10",
+        version = "1.2.11",
     ) {
         name("Reporter")
         author("LinHeLurking")
