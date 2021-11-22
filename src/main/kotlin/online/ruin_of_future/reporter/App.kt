@@ -2,7 +2,6 @@ package online.ruin_of_future.reporter
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.console.command.CommandManager
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
@@ -12,21 +11,65 @@ import net.mamoe.mirai.contact.Contact.Companion.sendImage
 import net.mamoe.mirai.event.globalEventChannel
 import net.mamoe.mirai.event.subscribeFriendMessages
 import net.mamoe.mirai.event.subscribeGroupMessages
-import net.mamoe.mirai.utils.MiraiLogger
 import java.io.ByteArrayInputStream
-import java.time.LocalDateTime
+import java.time.ZoneId
+import java.util.*
 
 object ReporterPlugin : KotlinPlugin(
     JvmPluginDescription(
         id = "online.ruin_of_future.reporter",
-        version = "1.2.11",
+        version = "1.2.12",
     ) {
         name("Reporter")
         author("LinHeLurking")
     }
 ) {
-    val newsCrawler = NewsCrawler()
-    val animeCrawler = AnimeCrawler()
+    private val newsCrawler = NewsCrawler()
+    private val animeCrawler = AnimeCrawler()
+    private val scheduler = Timer()
+    private val dailyTask = object: TimerTask() {
+        override fun run() {
+            Bot.instances.forEach {
+                if (it.id in NewsGroupWhiteList.groupIdsPerBot) {
+                    launch {
+                        for (groupId in NewsGroupWhiteList.groupIdsPerBot[it.id]!!) {
+                            try {
+                                val group = it.getGroup(groupId)
+                                group?.sendMessage("早上好呀, 这是今天的新闻速报 \nq(≧▽≦q)")
+                                group?.sendImage(ByteArrayInputStream(newsCrawler.newsToday()))
+                                logger.info(
+                                    "Daily news push to group " +
+                                            (group?.name ?: "<No group of ${groupId}> from ${it.id}")
+                                )
+                            } catch (e: Exception) {
+                                logger.error(e)
+                            }
+                            delay(100)
+                        }
+                    }
+                }
+                if (it.id in NewsGroupWhiteList.groupIdsPerBot) {
+                    launch {
+                        for (groupId in NewsGroupWhiteList.groupIdsPerBot[it.id]!!) {
+                            try {
+                                val group = it.getGroup(groupId)
+                                group?.sendMessage("早上好呀, 这是今天的 B 站番剧 \n( •̀ ω •́ )✧")
+                                group?.sendImage(ByteArrayInputStream(animeCrawler.animeToday()))
+                                logger.info(
+                                    "Daily anime push to group " +
+                                            (group?.name ?: "<No group of ${groupId}> from ${it.id}")
+                                )
+                            } catch (e: Exception) {
+                                logger.error(e)
+                            }
+                            delay(100)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     override fun onEnable() {
         NewsGroupWhiteList.reload()
         AnimeGroupWhiteList.reload()
@@ -34,48 +77,17 @@ object ReporterPlugin : KotlinPlugin(
         CommandManager.registerCommand(NewsGroupCommand)
         CommandManager.registerCommand(AnimeGroupCommand)
 
-        this.launch {
-            while (true) {
-                val dateTime = LocalDateTime.now()
-                if (dateTime.hour == 7 && dateTime.minute in 0..32) {
-                    logger.info("Daily pushing")
-                    Bot.instances.forEach {
-                        if (it.id in NewsGroupWhiteList.groupIdsPerBot) {
-                            for (groupId in NewsGroupWhiteList.groupIdsPerBot[it.id]!!) {
-                                try {
-                                    val group = it.getGroup(groupId)
-                                    group?.sendMessage("早上好呀, 这是今天的新闻速报 \nq(≧▽≦q)")
-                                    group?.sendImage(ByteArrayInputStream(newsCrawler.newsToday()))
-                                    logger.info(
-                                        "Daily news push to group " +
-                                                (group?.name ?: "<No group of ${groupId}> from ${it.id}")
-                                    )
-                                } catch (e: Exception) {
-                                    logger.error(e)
-                                }
-                                delay(100)
-                            }
-                        }
-                        if (it.id in NewsGroupWhiteList.groupIdsPerBot) {
-                            for (groupId in NewsGroupWhiteList.groupIdsPerBot[it.id]!!) {
-                                try {
-                                    val group = it.getGroup(groupId)
-                                    group?.sendMessage("早上好呀, 这是今天的 B 站番剧 \n( •̀ ω •́ )✧")
-                                    group?.sendImage(ByteArrayInputStream(animeCrawler.animeToday()))
-                                    logger.info(
-                                        "Daily anime push to group " +
-                                                (group?.name ?: "<No group of ${groupId}> from ${it.id}")
-                                    )
-                                } catch (e: Exception) {
-                                    logger.error(e)
-                                }
-                                delay(100)
-                            }
-                        }
-                    }
-                }
-                delay(1000 * 60 * 30L)
-            }
+        val date = Date.from(
+            Date().toInstant().atZone(ZoneId.systemDefault())
+                .toLocalDate().atStartOfDay(ZoneId.systemDefault()).toInstant()
+        ) // midnight today
+        date.time += 7 * 60 * 60 * 1000
+
+        if (date.before(Date())) {
+            date.time += 24 * 60 * 60 * 1000
+            scheduler.schedule(dailyTask, date, 24 * 60 * 60 * 1000)
+        } else {
+            scheduler.schedule(dailyTask, date, 24 * 60 * 60 * 1000)
         }
 
         val sendNewsToTarget: suspend (Contact) -> Unit = {
@@ -96,7 +108,6 @@ object ReporterPlugin : KotlinPlugin(
                 } else {
                     sender.sendMessage("为了防止打扰到网友，这个群不在日报白名单呢 QwQ")
                 }
-
             }
         }
 
@@ -143,5 +154,12 @@ object ReporterPlugin : KotlinPlugin(
                 sendAnimeToTarget(sender)
             }
         }
+    }
+
+    override fun onDisable() {
+        dailyTask.cancel()
+        scheduler.cancel()
+        CommandManager.unregisterCommand(NewsGroupCommand)
+        CommandManager.unregisterCommand(AnimeGroupCommand)
     }
 }
