@@ -4,13 +4,13 @@ plugins {
     kotlin("jvm") version "1.5.30"
     kotlin("plugin.serialization") version "1.5.20"
 
-    id("net.mamoe.mirai-console") version "2.7.0"
+    id("net.mamoe.mirai-console") version "2.8.2"
     `maven-publish`
     signing
 }
 
 group = "online.ruin_of_future"
-version = "1.2.11"
+version = "1.2.12"
 
 repositories {
     maven(url = "https://maven.aliyun.com/repository/public")
