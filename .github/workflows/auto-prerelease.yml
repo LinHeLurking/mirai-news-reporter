@@ -1,5 +1,6 @@
 # .github/workflows/auto-prerelease-on-tag-push.yml
 name: Release Automatically On Tag Push
+permissions: write-all
 on:
   push:
     tags:
