@@ -25,5 +25,5 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "latest"
           prerelease: false
-          title: "Latest Stable version"
+          title: "Stable version: ${{ env.RELEASE_VERSION }}"
           files: ./build/mirai/*.jar
