@@ -1,5 +1,6 @@
 # .github/workflows/release-manually.yml
 name: Release Manually
+permissions: write-all
 on:
   workflow_dispatch:
 jobs:
