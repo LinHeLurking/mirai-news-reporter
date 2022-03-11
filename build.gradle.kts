@@ -1,16 +1,16 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.5.30"
-    kotlin("plugin.serialization") version "1.5.20"
+    kotlin("jvm") version "1.6.10"
+    kotlin("plugin.serialization") version "1.6.10"
 
-    id("net.mamoe.mirai-console") version "2.8.2"
+    id("net.mamoe.mirai-console") version "2.10.1"
     `maven-publish`
     signing
 }
 
 group = "online.ruin_of_future"
-version = "1.2.12"
+version = "1.3.0"
 
 repositories {
     maven(url = "https://maven.aliyun.com/repository/public")
