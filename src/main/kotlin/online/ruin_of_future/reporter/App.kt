@@ -48,9 +48,9 @@ object ReporterPlugin : KotlinPlugin(
                         }
                     }
                 }
-                if (it.id in NewsGroupWhiteList.groupIdsPerBot) {
+                if (it.id in AnimeGroupWhiteList.groupIdsPerBot) {
                     launch {
-                        for (groupId in NewsGroupWhiteList.groupIdsPerBot[it.id]!!) {
+                        for (groupId in AnimeGroupWhiteList.groupIdsPerBot[it.id]!!) {
                             try {
                                 val group = it.getGroup(groupId)
                                 group?.sendMessage("早上好呀, 这是今天的 B 站番剧 \n( •̀ ω •́ )✧")
