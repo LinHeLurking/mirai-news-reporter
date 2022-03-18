@@ -1,6 +1,5 @@
 package online.ruin_of_future.reporter
 
-import java.io.IOException
 import org.jsoup.Jsoup
 import java.awt.Color
 import java.awt.Font
@@ -8,6 +7,7 @@ import java.awt.Image.SCALE_SMOOTH
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
+import java.io.IOException
 import java.net.URL
 import javax.imageio.ImageIO
 import kotlin.math.min
@@ -37,12 +37,25 @@ class NewsCrawler {
         if (todayUrl.startsWith("//")) {
             todayUrl = "https:$todayUrl"
         }
+        println(todayUrl)
         val newsDoc = Jsoup.parse(httpGetter.get(todayUrl))
-        val newsNode = newsDoc.select("div.RichText.ztext.Post-RichText.css-hnrfcf")
-        val newsImgUrl = newsNode.select("figure noscript img").attr("src")
+        val newsNode = newsDoc.select("#root > div > main > div > article > div.Post-RichTextContainer > div > div")
+        val newsImgUrl = newsNode.select("figure > img").first()?.let {
+//            println(it.toString())
+            if (it.attr("src").startsWith("https")) {
+                it.attr("src")
+            } else if (it.attr("data-actualsrc").startsWith("https")) {
+                it.attr("data-actualsrc")
+            } else {
+                // TODO: replace with an empty place holder image
+                ""
+            }
+        } ?: ""
+//        println(newsImgUrl)
         val newsTextElement = newsNode.select("p")
         val newsTextStringBuilder = StringBuilder()
         for (p in newsTextElement) {
+            // TODO: better formatting
             val rawStr = StringBuilder()
             var lastNotChinise = false
             for (ch in p.text()) {
