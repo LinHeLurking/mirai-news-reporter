@@ -1,5 +1,6 @@
 # .github/workflows/auto-prerelease-on-tag-push.yml
 name: Release Automatically On Tag Push
+permissions: write-all
 on:
   push:
     tags:
@@ -19,7 +20,7 @@ jobs:
           echo ${{ env.RELEASE_VERSION }}
           [[ ${{ env.RELEASE_VERSION }} == v* ]] || exit 1
       - name: Git Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Gradle Wrapper Validation
         uses: gradle/wrapper-validation-action@v1.0.4
       - name: Set up JDK 11
