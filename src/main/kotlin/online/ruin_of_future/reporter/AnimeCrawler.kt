@@ -19,6 +19,7 @@ import javax.imageio.ImageIO
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
 data class AnimeInfo(
+    val badge: String = "?",
     @JsonNames("cover")
     val coverURL: String,
     val delay: Int, // Indicating whether this is delayed this week
@@ -84,10 +85,11 @@ class AnimeCrawler {
         .createFont(Font.TRUETYPE_FONT, this.javaClass.getResourceAsStream("/chinese_font.ttf"))
 
 
+    private val json = Json { ignoreUnknownKeys = true }
+
     private suspend fun getData(): TimeLineInfo {
         val jsonStr = httpGetter.get(entryURL)
-        val data = Json.decodeFromString<TimeLineInfo>(jsonStr)
-        return data
+        return json.decodeFromString(jsonStr)
     }
 
     private suspend fun buildImageByteArray(animeInfos: List<AnimeInfo>): ByteArray {
