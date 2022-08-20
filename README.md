@@ -57,6 +57,8 @@ Bot 在回复命令时的很多语句，都可以通过 `/reporter_msg` 命令�
 |noDisturbingGroupMessages|为了防止打扰到网友，这个群不在日报白名单呢QwQ| 白名单提示                    |
 |errorMessages|出错啦,等会再试试吧￣へ￣| 错误提示                     |
 
+> 上述的 key，写成单数形式也 OK
+
 ## 效果展示
 
 目前排版还不是很好, 以后找机会继续优化.
