@@ -3,13 +3,14 @@ package online.ruin_of_future.reporter.command
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.console.command.*
 import net.mamoe.mirai.console.command.CommandSender.Companion.asCommandSender
+import net.mamoe.mirai.console.command.ConsoleCommandSender.sendMessage
 import net.mamoe.mirai.contact.Group
 import online.ruin_of_future.reporter.ReporterPlugin
 import online.ruin_of_future.reporter.data.AnimeGroupWhiteList
 import online.ruin_of_future.reporter.data.NewsGroupWhiteList
 
 private val deprecationMessage =
-    "本命令将被废弃，推荐使用统一的白名单管理命令 ${CommandManager.INSTANCE.commandPrefix}${WhiteGroupCommand.primaryName} 来帮助管理白名单"
+    "本命令将被废弃，推荐使用统一的白名单管理命令 ${CommandManager.INSTANCE.commandPrefix}${WhiteListCommand.primaryName} 来帮助管理白名单"
 
 @Deprecated("Use consistent commands to control both anime and news.")
 object NewsGroupCommand : CompositeCommand(

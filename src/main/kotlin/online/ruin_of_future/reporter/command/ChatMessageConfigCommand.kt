@@ -2,13 +2,11 @@ package online.ruin_of_future.reporter.command
 
 import net.mamoe.mirai.console.command.CommandSender
 import net.mamoe.mirai.console.command.CompositeCommand
-import net.mamoe.mirai.utils.SimpleLogger
 import online.ruin_of_future.reporter.ReporterPlugin
 import online.ruin_of_future.reporter.config.ReporterConfig
-import org.slf4j.LoggerFactory
 
 object ChatMessageConfigCommand : CompositeCommand(
-    ReporterPlugin, "msg_conf", description = "配置 Bot 交互消息"
+    ReporterPlugin, "reporter_msg", description = "配置 Bot 交互消息"
 ) {
     private fun splitList(triggers: String): List<String> {
         return triggers.split(',', '，', ';', '；').toList()

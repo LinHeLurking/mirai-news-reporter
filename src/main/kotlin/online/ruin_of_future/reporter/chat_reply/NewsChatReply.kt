@@ -10,8 +10,8 @@ import net.mamoe.mirai.event.subscribeFriendMessages
 import net.mamoe.mirai.event.subscribeGroupMessages
 import online.ruin_of_future.reporter.ReporterPlugin
 import online.ruin_of_future.reporter.config.ReporterConfig
-import online.ruin_of_future.reporter.data.NewsGroupWhiteList
 import online.ruin_of_future.reporter.crawler.NewsCrawler
+import online.ruin_of_future.reporter.data.NewsGroupWhiteList
 import online.ruin_of_future.reporter.regexOrBuilder
 import java.io.ByteArrayInputStream
 import kotlin.coroutines.CoroutineContext

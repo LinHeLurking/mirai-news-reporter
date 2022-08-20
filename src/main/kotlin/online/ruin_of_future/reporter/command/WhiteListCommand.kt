@@ -12,8 +12,8 @@ import online.ruin_of_future.reporter.data.AnimeGroupWhiteList
 import online.ruin_of_future.reporter.data.GroupWhiteList
 import online.ruin_of_future.reporter.data.NewsGroupWhiteList
 
-object WhiteGroupCommand : CompositeCommand(
-    ReporterPlugin, "white_group", description = "统一的白名单管理"
+object WhiteListCommand : CompositeCommand(
+    ReporterPlugin, "reporter_list", description = "统一的白名单管理"
 ) {
     private fun getWhiteList(category: String?): List<GroupWhiteList> {
         val animeRegex = Regex("anime|Anime|动画")

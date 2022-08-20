@@ -7,10 +7,10 @@ import net.mamoe.mirai.Bot
 import net.mamoe.mirai.contact.Contact.Companion.sendImage
 import online.ruin_of_future.reporter.ReporterPlugin
 import online.ruin_of_future.reporter.config.ReporterConfig
-import online.ruin_of_future.reporter.data.AnimeGroupWhiteList
-import online.ruin_of_future.reporter.data.NewsGroupWhiteList
 import online.ruin_of_future.reporter.crawler.AnimeCrawler
 import online.ruin_of_future.reporter.crawler.NewsCrawler
+import online.ruin_of_future.reporter.data.AnimeGroupWhiteList
+import online.ruin_of_future.reporter.data.NewsGroupWhiteList
 import java.io.ByteArrayInputStream
 import java.util.*
 

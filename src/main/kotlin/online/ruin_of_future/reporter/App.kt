@@ -9,7 +9,7 @@ import online.ruin_of_future.reporter.chat_reply.NewsChatReply
 import online.ruin_of_future.reporter.command.AnimeGroupCommand
 import online.ruin_of_future.reporter.command.ChatMessageConfigCommand
 import online.ruin_of_future.reporter.command.NewsGroupCommand
-import online.ruin_of_future.reporter.command.WhiteGroupCommand
+import online.ruin_of_future.reporter.command.WhiteListCommand
 import online.ruin_of_future.reporter.config.ReporterConfig
 import online.ruin_of_future.reporter.data.AnimeGroupWhiteList
 import online.ruin_of_future.reporter.data.NewsGroupWhiteList
@@ -40,7 +40,7 @@ object ReporterPlugin : KotlinPlugin(
 
         commands.add(AnimeGroupCommand)
         commands.add(NewsGroupCommand)
-        commands.add(WhiteGroupCommand)
+        commands.add(WhiteListCommand)
         commands.add(ChatMessageConfigCommand)
 
         commands.forEach {
