@@ -1,0 +1,76 @@
+package online.ruin_of_future.reporter.chat_reply
+
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
+import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
+import net.mamoe.mirai.contact.Contact
+import net.mamoe.mirai.contact.Contact.Companion.sendImage
+import net.mamoe.mirai.event.globalEventChannel
+import net.mamoe.mirai.event.subscribeFriendMessages
+import net.mamoe.mirai.event.subscribeGroupMessages
+import online.ruin_of_future.reporter.ReporterPlugin
+import online.ruin_of_future.reporter.config.ReporterConfig
+import online.ruin_of_future.reporter.crawler.AnimeCrawler
+import online.ruin_of_future.reporter.crawler.NoAnimeException
+import online.ruin_of_future.reporter.data.AnimeGroupWhiteList
+import online.ruin_of_future.reporter.regexOrBuilder
+import java.io.ByteArrayInputStream
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
+
+object AnimeChatReply {
+    private suspend fun sendAnimeToTarget(contact: Contact, context: CoroutineContext = Dispatchers.Default) {
+        try {
+            if (!AnimeCrawler.isCacheValid()) {
+                contact.sendMessage(ReporterConfig.chatMessage.waitMessage)
+            }
+            val stream = withContext(context) {
+                ByteArrayInputStream(AnimeCrawler.animeToday())
+            }
+            contact.sendMessage(ReporterConfig.chatMessage.animeReplayMessage)
+            contact.sendImage(stream)
+        } catch (e: Exception) {
+            when (e) {
+                is NoAnimeException -> {
+                    contact.sendMessage(ReporterConfig.chatMessage.noAnimeMessage)
+                    ReporterPlugin.logger.info(e)
+                }
+
+                else -> {
+                    contact.sendMessage(ReporterConfig.chatMessage.errorMessage)
+                    ReporterPlugin.logger.error(e)
+                }
+            }
+        }
+    }
+
+    fun buildTrigger(): Regex {
+        val dailyTrigger = regexOrBuilder(ReporterConfig.chatMessage.dailyTriggers)
+        val separatorTrigger = regexOrBuilder(ReporterConfig.chatMessage.separators)
+        val animeTrigger = regexOrBuilder(ReporterConfig.chatMessage.animeTriggers)
+        return Regex("$dailyTrigger$separatorTrigger?$animeTrigger")
+    }
+
+    val trigger = buildTrigger()
+
+    fun registerToPlugin(plugin: KotlinPlugin) {
+        plugin.globalEventChannel().subscribeGroupMessages {
+            matching(trigger) {
+                plugin.logger.info("$senderName 发起了动画请求...")
+                if (AnimeGroupWhiteList.groupIdsPerBot[bot.id]?.contains(group.id) == true) {
+                    sendAnimeToTarget(group, coroutineContext)
+                } else {
+                    sender.sendMessage(ReporterConfig.chatMessage.noDisturbingGroupMessage)
+                }
+            }
+        }
+
+        plugin.globalEventChannel().subscribeFriendMessages {
+            matching(trigger) {
+                plugin.logger.info("$senderName 发起了动画请求...")
+                sendAnimeToTarget(sender, coroutineContext)
+            }
+        }
+    }
+}

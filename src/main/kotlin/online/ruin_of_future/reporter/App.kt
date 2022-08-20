@@ -1,25 +1,16 @@
 package online.ruin_of_future.reporter
 
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import net.mamoe.mirai.Bot
 import net.mamoe.mirai.console.command.CommandManager
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
-import net.mamoe.mirai.contact.Contact
-import net.mamoe.mirai.contact.Contact.Companion.sendImage
-import net.mamoe.mirai.event.globalEventChannel
-import net.mamoe.mirai.event.subscribeFriendMessages
-import net.mamoe.mirai.event.subscribeGroupMessages
+import online.ruin_of_future.reporter.chat_reply.AnimeChatReply
+import online.ruin_of_future.reporter.chat_reply.NewsChatReply
 import online.ruin_of_future.reporter.command.AnimeGroupCommand
 import online.ruin_of_future.reporter.command.NewsGroupCommand
 import online.ruin_of_future.reporter.config.ReporterConfig
 import online.ruin_of_future.reporter.data.AnimeGroupWhiteList
 import online.ruin_of_future.reporter.data.NewsGroupWhiteList
-import online.ruin_of_future.reporter.util.AnimeCrawler
-import online.ruin_of_future.reporter.util.NewsCrawler
-import online.ruin_of_future.reporter.util.NoAnimeException
-import java.io.ByteArrayInputStream
+import online.ruin_of_future.reporter.tasks.MorningReportTask
 import java.time.ZoneId
 import java.util.*
 
@@ -32,51 +23,8 @@ object ReporterPlugin : KotlinPlugin(
         author("LinHeLurking")
     }
 ) {
-    private val newsCrawler = NewsCrawler()
-    private val animeCrawler = AnimeCrawler()
     private val scheduler = Timer()
-    private val dailyTask = object: TimerTask() {
-        override fun run() {
-            Bot.instances.forEach {
-                if (it.id in NewsGroupWhiteList.groupIdsPerBot) {
-                    launch {
-                        for (groupId in NewsGroupWhiteList.groupIdsPerBot[it.id]!!) {
-                            try {
-                                val group = it.getGroup(groupId)
-                                group?.sendMessage("早上好呀, 这是今天的新闻速报 \nq(≧▽≦q)")
-                                group?.sendImage(ByteArrayInputStream(newsCrawler.newsToday()))
-                                logger.info(
-                                    "Daily news push to group " +
-                                            (group?.name ?: "<No group of ${groupId}> from ${it.id}")
-                                )
-                            } catch (e: Exception) {
-                                logger.error(e)
-                            }
-                            delay(100)
-                        }
-                    }
-                }
-                if (it.id in AnimeGroupWhiteList.groupIdsPerBot) {
-                    launch {
-                        for (groupId in AnimeGroupWhiteList.groupIdsPerBot[it.id]!!) {
-                            try {
-                                val group = it.getGroup(groupId)
-                                group?.sendMessage("早上好呀, 这是今天的 B 站番剧 \n( •̀ ω •́ )✧")
-                                group?.sendImage(ByteArrayInputStream(animeCrawler.animeToday()))
-                                logger.info(
-                                    "Daily anime push to group " +
-                                            (group?.name ?: "<No group of ${groupId}> from ${it.id}")
-                                )
-                            } catch (e: Exception) {
-                                logger.error(e)
-                            }
-                            delay(100)
-                        }
-                    }
-                }
-            }
-        }
-    }
+    private val dailyTask = MorningReportTask()
 
     override fun onEnable() {
         ReporterConfig.reload()
@@ -100,70 +48,8 @@ object ReporterPlugin : KotlinPlugin(
             scheduler.schedule(dailyTask, date, 24 * 60 * 60 * 1000)
         }
 
-        val sendNewsToTarget: suspend (Contact) -> Unit = {
-            try {
-                it.sendMessage("这是今天的新闻速报 \nq(≧▽≦q)")
-                it.sendImage(ByteArrayInputStream(newsCrawler.newsToday()))
-            } catch (e: Exception) {
-                it.sendMessage("出错啦, 等会再试试吧 ￣へ￣")
-                logger.error(e)
-            }
-        }
-
-        this.globalEventChannel().subscribeGroupMessages {
-            matching(Regex("(每日|今日)?(新闻|速报|速递)")) {
-                logger.info("$senderName 发起了新闻请求...")
-                if (NewsGroupWhiteList.groupIdsPerBot[bot.id]?.contains(group.id) == true) {
-                    sendNewsToTarget(group)
-                } else {
-                    sender.sendMessage("为了防止打扰到网友，这个群不在日报白名单呢 QwQ")
-                }
-            }
-        }
-
-        this.globalEventChannel().subscribeFriendMessages {
-            matching(Regex("(每日|今日)?(新闻|速报|速递)")) {
-                logger.info("$senderName 发起了新闻请求...")
-                sendNewsToTarget(sender)
-            }
-        }
-
-        val sendAnimeToTarget: suspend (Contact) -> Unit = {
-            try {
-                it.sendMessage("这是今天的 B 站番剧 \n( •̀ ω •́ )✧")
-                it.sendImage(ByteArrayInputStream(animeCrawler.animeToday()))
-            } catch (e: Exception) {
-                when (e) {
-                    is NoAnimeException -> {
-                        it.sendMessage("好像今天没有放送呢 >_<")
-                        logger.info(e)
-                    }
-                    else -> {
-                        it.sendMessage("出错啦, 等会再试试吧 ￣へ￣")
-                        logger.error(e)
-                    }
-                }
-            }
-        }
-
-
-        this.globalEventChannel().subscribeGroupMessages {
-            matching(Regex("(每日|今日)?(新番|番剧|动画)")) {
-                logger.info("$senderName 发起了动画请求...")
-                if (AnimeGroupWhiteList.groupIdsPerBot[bot.id]?.contains(group.id) == true) {
-                    sendAnimeToTarget(group)
-                } else {
-                    sender.sendMessage("为了防止打扰到网友，这个群不在日报白名单呢 QwQ")
-                }
-            }
-        }
-
-        this.globalEventChannel().subscribeFriendMessages {
-            matching(Regex("(每日|今日)?(新番|番剧|动画)")) {
-                logger.info("$senderName 发起了动画请求...")
-                sendAnimeToTarget(sender)
-            }
-        }
+        NewsChatReply.registerToPlugin(this)
+        AnimeChatReply.registerToPlugin(this)
     }
 
     override fun onDisable() {

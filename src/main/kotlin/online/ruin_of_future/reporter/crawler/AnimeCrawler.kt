@@ -1,4 +1,4 @@
-package online.ruin_of_future.reporter.util
+package online.ruin_of_future.reporter.crawler
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -75,13 +75,12 @@ data class TimeLineInfo(
 
 class NoAnimeException(message: String) : Exception(message)
 
-@OptIn(ExperimentalSerializationApi::class)
-class AnimeCrawler {
+object AnimeCrawler {
     private val httpGetter = HTTPGetter()
     private val entryURL = "https://bangumi.bilibili.com/web_api/timeline_global"
 
     private val byteArrayCacheToday = Cached(byteArrayOf(), 1000 * 60 * 60 * 4L)
-    private val byteArrayCacheTomorrow = Cached(byteArrayOf(), 1000 * 60 * 60 * 4L)
+//    private val byteArrayCacheTomorrow = Cached(byteArrayOf(), 1000 * 60 * 60 * 4L)
 
     private val font = Font
         .createFont(Font.TRUETYPE_FONT, this.javaClass.getResourceAsStream("/chinese_font.ttf"))
@@ -92,6 +91,10 @@ class AnimeCrawler {
     private suspend fun getData(): TimeLineInfo {
         val jsonStr = httpGetter.get(entryURL)
         return json.decodeFromString(jsonStr)
+    }
+
+    fun isCacheValid(): Boolean {
+        return byteArrayCacheToday.isNotOutdated()
     }
 
     private suspend fun buildImageByteArray(animeInfos: List<AnimeInfo>): ByteArray {
@@ -215,12 +218,12 @@ class AnimeCrawler {
         return byteArrayCacheToday.value
     }
 
-    @Throws(Exception::class)
-    suspend fun animeTomorrow(): ByteArray {
-        if (byteArrayCacheTomorrow.isNotOutdated()) {
-            return byteArrayCacheToday.value
-        }
-        byteArrayCacheToday.value = animeByDate(LocalDateTime.now().plusDays(1))
-        return byteArrayCacheToday.value
-    }
+//    @Throws(Exception::class)
+//    suspend fun animeTomorrow(): ByteArray {
+//        if (byteArrayCacheTomorrow.isNotOutdated()) {
+//            return byteArrayCacheToday.value
+//        }
+//        byteArrayCacheToday.value = animeByDate(LocalDateTime.now().plusDays(1))
+//        return byteArrayCacheToday.value
+//    }
 }

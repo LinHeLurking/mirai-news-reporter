@@ -1,4 +1,4 @@
-package online.ruin_of_future.reporter.util
+package online.ruin_of_future.reporter.crawler
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -15,17 +15,20 @@ import javax.imageio.ImageIO
 import kotlin.math.min
 
 
-class NewsCrawler {
+object NewsCrawler {
     private val httpGetter = HTTPGetter()
 
     private val entryUrl: String = "https://www.zhihu.com/people/mt36501"
-
 
     private val byteArrayCache = Cached(byteArrayOf(), 1000 * 60 * 60 * 4L)
 
     private val font = Font
         .createFont(Font.TRUETYPE_FONT, this.javaClass.getResourceAsStream("/chinese_font.ttf"))
         .deriveFont(25f)
+
+    fun isCacheValid(): Boolean {
+        return byteArrayCache.isNotOutdated()
+    }
 
     @Throws(IOException::class)
     suspend fun newsToday(): ByteArray {
@@ -39,11 +42,9 @@ class NewsCrawler {
         if (todayUrl.startsWith("//")) {
             todayUrl = "https:$todayUrl"
         }
-        println(todayUrl)
         val newsDoc = Jsoup.parse(httpGetter.get(todayUrl))
         val newsNode = newsDoc.select("#root > div > main > div > article > div.Post-RichTextContainer > div > div")
         val newsImgUrl = newsNode.select("figure > img").first()?.let {
-//            println(it.toString())
             if (it.attr("src").startsWith("https")) {
                 it.attr("src")
             } else if (it.attr("data-actualsrc").startsWith("https")) {
@@ -53,30 +54,29 @@ class NewsCrawler {
                 ""
             }
         } ?: ""
-//        println(newsImgUrl)
         val newsTextElement = newsNode.select("p")
         val newsTextStringBuilder = StringBuilder()
         for (p in newsTextElement) {
             // TODO: better formatting
             val rawStr = StringBuilder()
-            var lastNotChinise = false
+            var lastNotChinese = false
             for (ch in p.text()) {
                 val thisNotChinese = Character.UnicodeScript.of(ch.code) != Character.UnicodeScript.HAN &&
                         (ch.isLetter() || ch.isDigit()) &&
                         !(ch == '.' || ch == '。' || ch == ':' || ch == '：' || ch == ',' || ch == '，')
 
                 if (thisNotChinese) {
-                    if (!lastNotChinise) {
+                    if (!lastNotChinese) {
                         rawStr.append(' ')
                     }
                     rawStr.append("$ch")
-                    lastNotChinise = true
+                    lastNotChinese = true
                 } else {
-                    if (lastNotChinise) {
+                    if (lastNotChinese) {
                         rawStr.append(' ')
                     }
                     rawStr.append("$ch")
-                    lastNotChinise = false
+                    lastNotChinese = false
                 }
             }
 
@@ -105,7 +105,9 @@ class NewsCrawler {
         val newsText = newsTextStringBuilder.toString()
 
         val imgWidth = 860
-        val newsImg = ImageIO.read(URL(newsImgUrl))
+        val newsImg = withContext(Dispatchers.IO) {
+            ImageIO.read(URL(newsImgUrl))
+        }
         val scaledImgHeight = newsImg.height * imgWidth / newsImg.width
         var imgHeight = scaledImgHeight + font.size * 2
         for (line in newsText.lines()) {

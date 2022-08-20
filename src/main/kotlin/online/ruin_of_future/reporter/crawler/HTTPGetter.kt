@@ -1,4 +1,4 @@
-package online.ruin_of_future.reporter.util
+package online.ruin_of_future.reporter.crawler
 
 import okhttp3.OkHttpClient
 import okhttp3.Request

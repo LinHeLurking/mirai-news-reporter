@@ -1,4 +1,4 @@
-package online.ruin_of_future.reporter.util
+package online.ruin_of_future.reporter.crawler
 
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
@@ -6,7 +6,7 @@ import kotlinx.coroutines.sync.withLock
 
 class Cached<T : Any>(
     value: T,
-    val expiredIn: Long
+    private val expiredIn: Long
 ) {
     private var updated: Long = 0
     private var initialized = false
@@ -32,13 +32,13 @@ class Cached<T : Any>(
         }
     }
 
-    suspend fun isOutdated(): Boolean {
+    fun isOutdated(): Boolean = runBlocking {
         mutex.withLock {
-            return updated + expiredIn < System.currentTimeMillis()
+            return@runBlocking updated + expiredIn < System.currentTimeMillis()
         }
     }
 
-    suspend fun isNotOutdated(): Boolean {
+    fun isNotOutdated(): Boolean {
         return !isOutdated()
     }
 }
