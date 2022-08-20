@@ -27,7 +27,7 @@ object AnimeChatReply {
             val stream = withContext(context) {
                 ByteArrayInputStream(AnimeCrawler.animeToday())
             }
-            contact.sendMessage(ReporterConfig.animeReplayMessages.random())
+            contact.sendMessage(ReporterConfig.animeReplyMessages.random())
             contact.sendImage(stream)
         } catch (e: Exception) {
             when (e) {

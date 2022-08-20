@@ -26,7 +26,7 @@ object NewsChatReply {
             val stream = withContext(context) {
                 ByteArrayInputStream(NewsCrawler.newsToday())
             }
-            contact.sendMessage(ReporterConfig.newsReplayMessages.random())
+            contact.sendMessage(ReporterConfig.newsReplyMessages.random())
             contact.sendImage(stream)
         } catch (e: Exception) {
             contact.sendMessage(ReporterConfig.errorMessages.random())

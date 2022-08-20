@@ -78,15 +78,15 @@ object ChatMessageConfigCommand : CompositeCommand(
         sender.sendMessage("设置 animeDailyMessages 为 $list")
     }
 
-    @SubCommand("animeReplayMessages", "animeReplayMessage")
-    suspend fun setAnimeReplayMessages(sender: CommandSender, args: String) {
+    @SubCommand("animeReplyMessages", "animeReplyMessage")
+    suspend fun setAnimeReplyMessages(sender: CommandSender, args: String) {
         val list = splitList(args)
-        ReporterConfig.animeReplayMessages.clear()
+        ReporterConfig.animeReplyMessages.clear()
         list.forEach {
-            ReporterConfig.animeReplayMessages.add(it)
+            ReporterConfig.animeReplyMessages.add(it)
         }
 
-        sender.sendMessage("设置 animeReplayMessages 为 $list")
+        sender.sendMessage("设置 animeReplyMessages 为 $list")
     }
 
     @SubCommand("noAnimeMessages", "noAnimeMessage")
@@ -111,15 +111,15 @@ object ChatMessageConfigCommand : CompositeCommand(
         sender.sendMessage("设置 newsDailyMessages 为 $list")
     }
 
-    @SubCommand("newsReplayMessages", "newsReplayMessage")
-    suspend fun setNewsReplayMessages(sender: CommandSender, args: String) {
+    @SubCommand("newsReplyMessages", "newsReplyMessage")
+    suspend fun setNewsReplyMessages(sender: CommandSender, args: String) {
         val list = splitList(args)
-        ReporterConfig.newsReplayMessages.clear()
+        ReporterConfig.newsReplyMessages.clear()
         list.forEach {
-            ReporterConfig.newsReplayMessages.add(it)
+            ReporterConfig.newsReplyMessages.add(it)
         }
 
-        sender.sendMessage("设置 newsReplayMessages 为 $list")
+        sender.sendMessage("设置 newsReplyMessages 为 $list")
     }
 
     @SubCommand("noDisturbingGroupMessages", "noDisturbingGroupMessage")
