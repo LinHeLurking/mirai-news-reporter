@@ -23,7 +23,7 @@ class MorningReportTask : TimerTask() {
                     for (groupId in NewsGroupWhiteList.groupIdsPerBot[it.id]!!) {
                         try {
                             val group = it.getGroup(groupId)
-                            group?.sendMessage(ReporterConfig.chatMessage.newsDailyMessage)
+                            group?.sendMessage(ReporterConfig.newsDailyMessages.random())
                             group?.sendImage(ByteArrayInputStream(NewsCrawler.newsToday()))
                             ReporterPlugin.logger.info(
                                 "Daily news push to group " +
@@ -41,7 +41,7 @@ class MorningReportTask : TimerTask() {
                     for (groupId in AnimeGroupWhiteList.groupIdsPerBot[it.id]!!) {
                         try {
                             val group = it.getGroup(groupId)
-                            group?.sendMessage(ReporterConfig.chatMessage.animeDailyMessage)
+                            group?.sendMessage(ReporterConfig.animeDailyMessages.random())
                             group?.sendImage(ByteArrayInputStream(AnimeCrawler.animeToday()))
                             ReporterPlugin.logger.info(
                                 "Daily anime push to group " +

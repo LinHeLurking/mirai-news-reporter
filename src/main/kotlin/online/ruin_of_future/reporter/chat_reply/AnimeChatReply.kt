@@ -1,7 +1,6 @@
 package online.ruin_of_future.reporter.chat_reply
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.contact.Contact
@@ -23,22 +22,22 @@ object AnimeChatReply {
     private suspend fun sendAnimeToTarget(contact: Contact, context: CoroutineContext = Dispatchers.Default) {
         try {
             if (!AnimeCrawler.isCacheValid()) {
-                contact.sendMessage(ReporterConfig.chatMessage.waitMessage)
+                contact.sendMessage(ReporterConfig.waitMessages.random())
             }
             val stream = withContext(context) {
                 ByteArrayInputStream(AnimeCrawler.animeToday())
             }
-            contact.sendMessage(ReporterConfig.chatMessage.animeReplayMessage)
+            contact.sendMessage(ReporterConfig.animeReplayMessages.random())
             contact.sendImage(stream)
         } catch (e: Exception) {
             when (e) {
                 is NoAnimeException -> {
-                    contact.sendMessage(ReporterConfig.chatMessage.noAnimeMessage)
+                    contact.sendMessage(ReporterConfig.noAnimeMessages.random())
                     ReporterPlugin.logger.info(e)
                 }
 
                 else -> {
-                    contact.sendMessage(ReporterConfig.chatMessage.errorMessage)
+                    contact.sendMessage(ReporterConfig.errorMessages.random())
                     ReporterPlugin.logger.error(e)
                 }
             }
@@ -46,9 +45,9 @@ object AnimeChatReply {
     }
 
     fun buildTrigger(): Regex {
-        val dailyTrigger = regexOrBuilder(ReporterConfig.chatMessage.dailyTriggers)
-        val separatorTrigger = regexOrBuilder(ReporterConfig.chatMessage.separators)
-        val animeTrigger = regexOrBuilder(ReporterConfig.chatMessage.animeTriggers)
+        val dailyTrigger = regexOrBuilder(ReporterConfig.dailyTriggers)
+        val separatorTrigger = regexOrBuilder(ReporterConfig.separators)
+        val animeTrigger = regexOrBuilder(ReporterConfig.animeTriggers)
         return Regex("$dailyTrigger$separatorTrigger?$animeTrigger")
     }
 
@@ -61,7 +60,7 @@ object AnimeChatReply {
                 if (AnimeGroupWhiteList.groupIdsPerBot[bot.id]?.contains(group.id) == true) {
                     sendAnimeToTarget(group, coroutineContext)
                 } else {
-                    sender.sendMessage(ReporterConfig.chatMessage.noDisturbingGroupMessage)
+                    sender.sendMessage(ReporterConfig.noDisturbingGroupMessages.random())
                 }
             }
         }

@@ -21,23 +21,23 @@ object NewsChatReply {
     private suspend fun sendNewsToTarget(contact: Contact, context: CoroutineContext = Dispatchers.Default) {
         try {
             if (!NewsCrawler.isCacheValid()) {
-                contact.sendMessage(ReporterConfig.chatMessage.waitMessage)
+                contact.sendMessage(ReporterConfig.waitMessages.random())
             }
             val stream = withContext(context) {
                 ByteArrayInputStream(NewsCrawler.newsToday())
             }
-            contact.sendMessage(ReporterConfig.chatMessage.newsReplayMessage)
+            contact.sendMessage(ReporterConfig.newsReplayMessages.random())
             contact.sendImage(stream)
         } catch (e: Exception) {
-            contact.sendMessage(ReporterConfig.chatMessage.errorMessage)
+            contact.sendMessage(ReporterConfig.errorMessages.random())
             ReporterPlugin.logger.error(e)
         }
     }
 
     fun buildTrigger(): Regex {
-        val dailyTrigger = regexOrBuilder(ReporterConfig.chatMessage.dailyTriggers)
-        val separatorTrigger = regexOrBuilder(ReporterConfig.chatMessage.separators)
-        val newsTrigger = regexOrBuilder(ReporterConfig.chatMessage.newsTriggers)
+        val dailyTrigger = regexOrBuilder(ReporterConfig.dailyTriggers)
+        val separatorTrigger = regexOrBuilder(ReporterConfig.separators)
+        val newsTrigger = regexOrBuilder(ReporterConfig.newsTriggers)
         return Regex("$dailyTrigger$separatorTrigger?$newsTrigger")
     }
 
@@ -50,7 +50,7 @@ object NewsChatReply {
                 if (NewsGroupWhiteList.groupIdsPerBot[bot.id]?.contains(group.id) == true) {
                     sendNewsToTarget(group, coroutineContext)
                 } else {
-                    sender.sendMessage(ReporterConfig.chatMessage.noDisturbingGroupMessage)
+                    sender.sendMessage(ReporterConfig.noDisturbingGroupMessages.random())
                 }
             }
         }
