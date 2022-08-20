@@ -11,6 +11,14 @@ import net.mamoe.mirai.contact.Contact.Companion.sendImage
 import net.mamoe.mirai.event.globalEventChannel
 import net.mamoe.mirai.event.subscribeFriendMessages
 import net.mamoe.mirai.event.subscribeGroupMessages
+import online.ruin_of_future.reporter.command.AnimeGroupCommand
+import online.ruin_of_future.reporter.command.NewsGroupCommand
+import online.ruin_of_future.reporter.config.ReporterConfig
+import online.ruin_of_future.reporter.data.AnimeGroupWhiteList
+import online.ruin_of_future.reporter.data.NewsGroupWhiteList
+import online.ruin_of_future.reporter.util.AnimeCrawler
+import online.ruin_of_future.reporter.util.NewsCrawler
+import online.ruin_of_future.reporter.util.NoAnimeException
 import java.io.ByteArrayInputStream
 import java.time.ZoneId
 import java.util.*
@@ -18,7 +26,7 @@ import java.util.*
 object ReporterPlugin : KotlinPlugin(
     JvmPluginDescription(
         id = "online.ruin_of_future.reporter",
-        version = "1.3.3",
+        version = "1.4.0",
     ) {
         name("Reporter")
         author("LinHeLurking")
@@ -71,6 +79,8 @@ object ReporterPlugin : KotlinPlugin(
     }
 
     override fun onEnable() {
+        ReporterConfig.reload()
+
         NewsGroupWhiteList.reload()
         AnimeGroupWhiteList.reload()
 

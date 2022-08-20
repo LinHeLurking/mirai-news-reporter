@@ -1,5 +1,7 @@
-package online.ruin_of_future.reporter
+package online.ruin_of_future.reporter.util
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import java.awt.Color
 import java.awt.Font
@@ -155,7 +157,9 @@ class NewsCrawler {
         }
         g.dispose()
         val os = ByteArrayOutputStream()
-        ImageIO.write(bufferedImage, "png", os)
+        withContext(Dispatchers.IO) {
+            ImageIO.write(bufferedImage, "png", os)
+        }
         byteArrayCache.value = os.toByteArray()
         return byteArrayCache.value
     }

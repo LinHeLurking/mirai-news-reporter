@@ -1,6 +1,8 @@
-package online.ruin_of_future.reporter
+package online.ruin_of_future.reporter.util
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -181,7 +183,9 @@ class AnimeCrawler {
         }
 
         val os = ByteArrayOutputStream()
-        ImageIO.write(bufferedImage, "png", os)
+        withContext(Dispatchers.IO) {
+            ImageIO.write(bufferedImage, "png", os)
+        }
         return os.toByteArray()
     }
 
