@@ -1,12 +1,14 @@
 package online.ruin_of_future.reporter
 
 import net.mamoe.mirai.console.command.CommandManager
+import net.mamoe.mirai.console.command.CompositeCommand
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import online.ruin_of_future.reporter.chat_reply.AnimeChatReply
 import online.ruin_of_future.reporter.chat_reply.NewsChatReply
 import online.ruin_of_future.reporter.command.AnimeGroupCommand
 import online.ruin_of_future.reporter.command.NewsGroupCommand
+import online.ruin_of_future.reporter.command.WhiteGroupCommand
 import online.ruin_of_future.reporter.config.ReporterConfig
 import online.ruin_of_future.reporter.data.AnimeGroupWhiteList
 import online.ruin_of_future.reporter.data.NewsGroupWhiteList
@@ -26,14 +28,22 @@ object ReporterPlugin : KotlinPlugin(
     private val scheduler = Timer()
     private val dailyTask = MorningReportTask()
 
+    // Convenient un-registration
+    private val commands :MutableList<CompositeCommand> = mutableListOf()
+
     override fun onEnable() {
         ReporterConfig.reload()
 
         NewsGroupWhiteList.reload()
         AnimeGroupWhiteList.reload()
 
-        CommandManager.registerCommand(NewsGroupCommand)
-        CommandManager.registerCommand(AnimeGroupCommand)
+        commands.add(AnimeGroupCommand)
+        commands.add(NewsGroupCommand)
+        commands.add(WhiteGroupCommand)
+
+        commands.forEach {
+            CommandManager.registerCommand(it)
+        }
 
         val date = Date.from(
             Date().toInstant().atZone(ZoneId.systemDefault())
@@ -55,7 +65,8 @@ object ReporterPlugin : KotlinPlugin(
     override fun onDisable() {
         dailyTask.cancel()
         scheduler.cancel()
-        CommandManager.unregisterCommand(NewsGroupCommand)
-        CommandManager.unregisterCommand(AnimeGroupCommand)
+        commands.forEach {
+            CommandManager.unregisterCommand(it)
+        }
     }
 }
