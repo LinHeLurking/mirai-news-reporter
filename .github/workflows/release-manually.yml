@@ -7,17 +7,17 @@ jobs:
   gradle:
     runs-on: ubuntu-latest
     steps:
+      - name: Git Checkout
+        uses: actions/checkout@v3
       - name: Set Env
         run: |
-          echo "$GITHUB_REF"
-          echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          VER=$(cat build.gradle.kts | grep "version =" | sed  s/version\ =\ //g | sed s/\"//g)
+          echo "RELEASE_VERSION=${VER}" >> $GITHUB_ENV
       - name: Test Env
         run: |
           echo $RELEASE_VERSION
           echo ${{ env.RELEASE_VERSION }}
           [[ ${{ env.RELEASE_VERSION }} == v* ]] || exit 1
-      - name: Git Checkout
-        uses: actions/checkout@v3
       - name: Gradle Wrapper Validation
         uses: gradle/wrapper-validation-action@v1.0.4
       - name: Set up JDK 11
