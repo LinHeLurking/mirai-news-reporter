@@ -30,7 +30,7 @@ object ReporterPlugin : KotlinPlugin(
     private val dailyTask = MorningReportTask()
 
     // Convenient un-registration
-    private val commands :MutableList<CompositeCommand> = mutableListOf()
+    private val commands: MutableList<CompositeCommand> = mutableListOf()
 
     override fun onEnable() {
         ReporterConfig.reload()

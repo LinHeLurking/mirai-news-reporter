@@ -34,14 +34,14 @@ object NewsChatReply {
         }
     }
 
-    fun buildTrigger(): Regex {
+    private fun buildTrigger(): Regex {
         val dailyTrigger = regexOrBuilder(ReporterConfig.dailyTriggers)
         val separatorTrigger = regexOrBuilder(ReporterConfig.separators)
         val newsTrigger = regexOrBuilder(ReporterConfig.newsTriggers)
-        return Regex("$dailyTrigger$separatorTrigger?$newsTrigger")
+        return Regex("($dailyTrigger)($separatorTrigger?)($newsTrigger)")
     }
 
-    val trigger = buildTrigger()
+    private val trigger = buildTrigger()
 
     fun registerToPlugin(plugin: KotlinPlugin) {
         plugin.globalEventChannel().subscribeGroupMessages {

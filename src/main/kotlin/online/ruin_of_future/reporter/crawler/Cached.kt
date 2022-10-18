@@ -32,7 +32,7 @@ class Cached<T : Any>(
         }
     }
 
-    fun isOutdated(): Boolean = runBlocking {
+    private fun isOutdated(): Boolean = runBlocking {
         mutex.withLock {
             return@runBlocking updated + expiredIn < System.currentTimeMillis()
         }

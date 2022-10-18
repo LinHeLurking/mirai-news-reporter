@@ -44,14 +44,14 @@ object AnimeChatReply {
         }
     }
 
-    fun buildTrigger(): Regex {
+    private fun buildTrigger(): Regex {
         val dailyTrigger = regexOrBuilder(ReporterConfig.dailyTriggers)
         val separatorTrigger = regexOrBuilder(ReporterConfig.separators)
         val animeTrigger = regexOrBuilder(ReporterConfig.animeTriggers)
-        return Regex("$dailyTrigger$separatorTrigger?$animeTrigger")
+        return Regex("($dailyTrigger)($separatorTrigger?)($animeTrigger)")
     }
 
-    val trigger = buildTrigger()
+    private val trigger = buildTrigger()
 
     fun registerToPlugin(plugin: KotlinPlugin) {
         plugin.globalEventChannel().subscribeGroupMessages {
