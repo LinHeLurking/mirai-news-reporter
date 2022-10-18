@@ -9,8 +9,8 @@ jobs:
     steps:
       - name: Set Env
         run: |
-          echo "$GITHUB_REF"
-          echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          ver=$(cat build.gradle.kts | grep "version =" | sed  s/version\ =\ //g | sed s/\"//g)
+          echo "RELEASE_VERSION=${ver}" >> $GITHUB_ENV
       - name: Test Env
         run: |
           echo $RELEASE_VERSION
