@@ -10,7 +10,6 @@ jobs:
       - name: Set Env
         run: |
           ver=$(cat build.gradle.kts | grep "version =" | sed  s/version\ =\ //g | sed s/\"//g)
-          echo $ver
           echo "RELEASE_VERSION=${ver}" >> $GITHUB_ENV
       - name: Test Env
         run: |
