@@ -16,42 +16,50 @@ import java.util.*
 
 class MorningReportTask : TimerTask() {
 
+    private suspend fun sendNewsFrom(bot: Bot) {
+        for (groupId in NewsGroupWhiteList.groupIdsPerBot[bot.id]!!) {
+            try {
+                val group = bot.getGroup(groupId)
+                group?.sendMessage(ReporterConfig.newsDailyMessages.random())
+                group?.sendImage(ByteArrayInputStream(NewsCrawler.newsToday()))
+                ReporterPlugin.logger.info(
+                    "Daily news push to group " +
+                            (group?.name ?: "<No group of ${groupId}> from ${bot.id}")
+                )
+            } catch (e: Exception) {
+                ReporterPlugin.logger.error(e)
+            }
+            delay(100)
+        }
+    }
+
+    private suspend fun sendAnimeFrom(bot: Bot) {
+        for (groupId in AnimeGroupWhiteList.groupIdsPerBot[bot.id]!!) {
+            try {
+                val group = bot.getGroup(groupId)
+                group?.sendMessage(ReporterConfig.animeDailyMessages.random())
+                group?.sendImage(ByteArrayInputStream(AnimeCrawler.animeToday()))
+                ReporterPlugin.logger.info(
+                    "Daily anime push to group " +
+                            (group?.name ?: "<No group of ${groupId}> from ${bot.id}")
+                )
+            } catch (e: Exception) {
+                ReporterPlugin.logger.error(e)
+            }
+            delay(100)
+        }
+    }
+
     override fun run() = runBlocking {
         Bot.instances.forEach {
             if (it.id in NewsGroupWhiteList.groupIdsPerBot) {
                 launch {
-                    for (groupId in NewsGroupWhiteList.groupIdsPerBot[it.id]!!) {
-                        try {
-                            val group = it.getGroup(groupId)
-                            group?.sendMessage(ReporterConfig.newsDailyMessages.random())
-                            group?.sendImage(ByteArrayInputStream(NewsCrawler.newsToday()))
-                            ReporterPlugin.logger.info(
-                                "Daily news push to group " +
-                                        (group?.name ?: "<No group of ${groupId}> from ${it.id}")
-                            )
-                        } catch (e: Exception) {
-                            ReporterPlugin.logger.error(e)
-                        }
-                        delay(100)
-                    }
+                    sendNewsFrom(it)
                 }
             }
             if (it.id in AnimeGroupWhiteList.groupIdsPerBot) {
                 launch {
-                    for (groupId in AnimeGroupWhiteList.groupIdsPerBot[it.id]!!) {
-                        try {
-                            val group = it.getGroup(groupId)
-                            group?.sendMessage(ReporterConfig.animeDailyMessages.random())
-                            group?.sendImage(ByteArrayInputStream(AnimeCrawler.animeToday()))
-                            ReporterPlugin.logger.info(
-                                "Daily anime push to group " +
-                                        (group?.name ?: "<No group of ${groupId}> from ${it.id}")
-                            )
-                        } catch (e: Exception) {
-                            ReporterPlugin.logger.error(e)
-                        }
-                        delay(100)
-                    }
+                    sendAnimeFrom(it)
                 }
             }
         }

@@ -76,8 +76,9 @@ data class TimeLineInfo(
 class NoAnimeException(message: String) : Exception(message)
 
 object AnimeCrawler {
+    private val ioDispatcher = Dispatchers.IO
     private val httpGetter = HTTPGetter()
-    private val entryURL = "https://bangumi.bilibili.com/web_api/timeline_global"
+    private const val entryURL = "https://bangumi.bilibili.com/web_api/timeline_global"
 
     private val byteArrayCacheToday = Cached(byteArrayOf(), 1000 * 60 * 60 * 4L)
 //    private val byteArrayCacheTomorrow = Cached(byteArrayOf(), 1000 * 60 * 60 * 4L)
@@ -89,7 +90,9 @@ object AnimeCrawler {
     private val json = Json { ignoreUnknownKeys = true }
 
     private suspend fun getData(): TimeLineInfo {
-        val jsonStr = httpGetter.get(entryURL)
+        val jsonStr = withContext(ioDispatcher) {
+            httpGetter.get(entryURL)
+        }
         return json.decodeFromString(jsonStr)
     }
 
@@ -186,7 +189,7 @@ object AnimeCrawler {
         }
 
         val os = ByteArrayOutputStream()
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             ImageIO.write(bufferedImage, "png", os)
         }
         return os.toByteArray()
