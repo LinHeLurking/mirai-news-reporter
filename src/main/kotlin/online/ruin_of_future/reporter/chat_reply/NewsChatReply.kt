@@ -18,13 +18,14 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 
 object NewsChatReply {
+    private val newsCrawler = NewsCrawler.INSTANCE
     private suspend fun sendNewsToTarget(contact: Contact, context: CoroutineContext = Dispatchers.Default) {
         try {
-            if (!NewsCrawler.isCacheValid()) {
+            if (!newsCrawler.isCacheValid()) {
                 contact.sendMessage(ReporterConfig.waitMessages.random())
             }
             val stream = withContext(context) {
-                ByteArrayInputStream(NewsCrawler.newsToday())
+                ByteArrayInputStream(newsCrawler.newsToday())
             }
             contact.sendMessage(ReporterConfig.newsReplyMessages.random())
             contact.sendImage(stream)

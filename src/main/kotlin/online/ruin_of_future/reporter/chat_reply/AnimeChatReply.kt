@@ -19,13 +19,15 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 
 object AnimeChatReply {
+    private val animeCrawler = AnimeCrawler.INSTANCE
+
     private suspend fun sendAnimeToTarget(contact: Contact, context: CoroutineContext = Dispatchers.Default) {
         try {
-            if (!AnimeCrawler.isCacheValid()) {
+            if (!animeCrawler.isCacheValid()) {
                 contact.sendMessage(ReporterConfig.waitMessages.random())
             }
             val stream = withContext(context) {
-                ByteArrayInputStream(AnimeCrawler.animeToday())
+                ByteArrayInputStream(animeCrawler.animeToday())
             }
             contact.sendMessage(ReporterConfig.animeReplyMessages.random())
             contact.sendImage(stream)

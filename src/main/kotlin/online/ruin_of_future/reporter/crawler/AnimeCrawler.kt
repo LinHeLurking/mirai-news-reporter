@@ -1,5 +1,6 @@
 package online.ruin_of_future.reporter.crawler
 
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -75,10 +76,11 @@ data class TimeLineInfo(
 
 class NoAnimeException(message: String) : Exception(message)
 
-object AnimeCrawler {
-    private val ioDispatcher = Dispatchers.IO
+class AnimeCrawler(
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+) {
+    private val entryURL = "https://bangumi.bilibili.com/web_api/timeline_global"
     private val httpGetter = HTTPGetter()
-    private const val entryURL = "https://bangumi.bilibili.com/web_api/timeline_global"
 
     private val byteArrayCacheToday = Cached(byteArrayOf(), 1000 * 60 * 60 * 4L)
 
@@ -240,5 +242,9 @@ object AnimeCrawler {
         }
         byteArrayCacheToday.value = animeByDate(LocalDateTime.now())
         return byteArrayCacheToday.value
+    }
+
+    companion object {
+        val INSTANCE = AnimeCrawler()
     }
 }

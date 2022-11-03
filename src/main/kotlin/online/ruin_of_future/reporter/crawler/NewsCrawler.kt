@@ -1,5 +1,6 @@
 package online.ruin_of_future.reporter.crawler
 
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
@@ -16,10 +17,9 @@ import javax.imageio.ImageIO
 import kotlin.math.min
 
 
-object NewsCrawler {
-    private val ioDispatcher = Dispatchers.IO
+class NewsCrawler(private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO) {
     private val httpGetter = HTTPGetter()
-    private const val entryUrl: String = "https://www.zhihu.com/people/mt36501"
+    private val entryUrl: String = "https://www.zhihu.com/people/mt36501"
 
     private val byteArrayCache = Cached(byteArrayOf(), 1000 * 60 * 60 * 4L)
 
@@ -183,5 +183,9 @@ object NewsCrawler {
         }
         byteArrayCache.value = os.toByteArray()
         return byteArrayCache.value
+    }
+
+    companion object {
+        val INSTANCE = NewsCrawler()
     }
 }

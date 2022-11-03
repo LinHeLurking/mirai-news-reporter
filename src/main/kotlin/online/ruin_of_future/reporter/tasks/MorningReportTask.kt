@@ -15,13 +15,15 @@ import java.io.ByteArrayInputStream
 import java.util.*
 
 class MorningReportTask : TimerTask() {
+    private val animeCrawler = AnimeCrawler.INSTANCE
+    private val newsCrawler = NewsCrawler.INSTANCE
 
     private suspend fun sendNewsFrom(bot: Bot) {
         for (groupId in NewsGroupWhiteList.groupIdsPerBot[bot.id]!!) {
             try {
                 val group = bot.getGroup(groupId)
                 group?.sendMessage(ReporterConfig.newsDailyMessages.random())
-                group?.sendImage(ByteArrayInputStream(NewsCrawler.newsToday()))
+                group?.sendImage(ByteArrayInputStream(newsCrawler.newsToday()))
                 ReporterPlugin.logger.info(
                     "Daily news push to group " +
                             (group?.name ?: "<No group of ${groupId}> from ${bot.id}")
@@ -38,7 +40,7 @@ class MorningReportTask : TimerTask() {
             try {
                 val group = bot.getGroup(groupId)
                 group?.sendMessage(ReporterConfig.animeDailyMessages.random())
-                group?.sendImage(ByteArrayInputStream(AnimeCrawler.animeToday()))
+                group?.sendImage(ByteArrayInputStream(animeCrawler.animeToday()))
                 ReporterPlugin.logger.info(
                     "Daily anime push to group " +
                             (group?.name ?: "<No group of ${groupId}> from ${bot.id}")
