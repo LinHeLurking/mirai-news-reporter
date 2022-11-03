@@ -90,34 +90,39 @@ class NewsCrawler(private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
         return bufferedImage
     }
 
+    private fun isNotChineseChar(ch: Char): Boolean {
+        return Character.UnicodeScript.of(ch.code) != Character.UnicodeScript.HAN &&
+                (ch.isLetter() || ch.isDigit()) &&
+                !(ch == '.' || ch == '。' || ch == ':' || ch == '：' || ch == ',' || ch == '，')
+    }
 
-    private suspend fun parseNewsText(newsTextElement: Elements): String {
+    private fun chineseEnglishSpace(rawString: String): String {
+        val sb = StringBuilder()
+        var lastNotChinese = false
+        for (ch in rawString) {
+            lastNotChinese = if (isNotChineseChar(ch)) {
+                if (!lastNotChinese) {
+                    sb.append(' ')
+                }
+                sb.append("$ch")
+                true
+            } else {
+                if (lastNotChinese) {
+                    sb.append(' ')
+                }
+                sb.append("$ch")
+                false
+            }
+        }
+
+        return sb.toString()
+    }
+
+    private fun parseNewsText(newsTextElement: Elements): String {
         val newsTextStringBuilder = StringBuilder()
         for (p in newsTextElement) {
             // TODO: better formatting
-            val rawStr = StringBuilder()
-            var lastNotChinese = false
-            for (ch in p.text()) {
-                val thisNotChinese = Character.UnicodeScript.of(ch.code) != Character.UnicodeScript.HAN &&
-                        (ch.isLetter() || ch.isDigit()) &&
-                        !(ch == '.' || ch == '。' || ch == ':' || ch == '：' || ch == ',' || ch == '，')
-
-                lastNotChinese = if (thisNotChinese) {
-                    if (!lastNotChinese) {
-                        rawStr.append(' ')
-                    }
-                    rawStr.append("$ch")
-                    true
-                } else {
-                    if (lastNotChinese) {
-                        rawStr.append(' ')
-                    }
-                    rawStr.append("$ch")
-                    false
-                }
-            }
-
-            val pStr = rawStr.toString()
+            val pStr = chineseEnglishSpace(p.text())
             if (pStr.isEmpty()) {
                 continue
             }
