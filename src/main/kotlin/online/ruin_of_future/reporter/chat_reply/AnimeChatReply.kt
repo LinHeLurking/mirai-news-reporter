@@ -66,6 +66,7 @@ object AnimeChatReply {
                     sendAnimeToTarget(group, coroutineContext)
                 } else {
                     sender.sendMessage(ReporterConfig.noDisturbingGroupMessages.random())
+                    sendAnimeToTarget(sender, coroutineContext)
                 }
             }
         }

@@ -52,6 +52,7 @@ object NewsChatReply {
                     sendNewsToTarget(group, coroutineContext)
                 } else {
                     sender.sendMessage(ReporterConfig.noDisturbingGroupMessages.random())
+                    sendNewsToTarget(sender, coroutineContext)
                 }
             }
         }
