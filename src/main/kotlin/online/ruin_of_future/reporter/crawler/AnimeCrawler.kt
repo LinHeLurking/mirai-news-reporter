@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNames
+import org.slf4j.LoggerFactory
 import java.awt.Color
 import java.awt.Font
 import java.awt.Image
@@ -194,10 +195,9 @@ class AnimeCrawler(
         val titleFont = font.deriveFont(40f).deriveFont(Font.BOLD)
 
         animeInfos.forEachIndexed { index, animeInfo ->
-            // Skip delayed episodes
-            if (animeInfo.delay != 0) {
-                return@forEachIndexed
-            }
+            val logger = LoggerFactory.getLogger("anime crawler")
+            logger.info("title: ${animeInfo.title}, delay: ${animeInfo.delay}")
+
             writeOneAnimeInfo(
                 bufferedImage,
                 animeInfo,
@@ -220,14 +220,15 @@ class AnimeCrawler(
 
     @Throws(Exception::class)
     private suspend fun animeByDate(dateTime: LocalDateTime): ByteArray {
-        val dateStr = "${dateTime.month.value}-${dateTime.dayOfMonth}"
+//        val dateStr = "${dateTime.month.value}-${dateTime.dayOfMonth}"
+        val dateStr = "1-2"
         val rawData = getData()
-        var dataOnDate: List<AnimeInfo> = listOf()
-        for (result in rawData.result) {
-            if (result.date == dateStr) {
-                dataOnDate = result.seasons
-            }
-        }
+        val dataOnDate = rawData.result.firstOrNull {
+            it.date == dateStr
+        }?.seasons?.filter {
+            it.delay == 0
+        } ?: listOf()
+
         // Sometimes it's really empty
         if (dataOnDate.isEmpty()) {
             throw NoAnimeException("Not found info for date: $dateStr")
