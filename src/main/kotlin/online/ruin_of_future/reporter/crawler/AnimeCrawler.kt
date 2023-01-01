@@ -9,7 +9,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNames
-import org.slf4j.LoggerFactory
 import java.awt.Color
 import java.awt.Font
 import java.awt.Image
@@ -195,9 +194,6 @@ class AnimeCrawler(
         val titleFont = font.deriveFont(40f).deriveFont(Font.BOLD)
 
         animeInfos.forEachIndexed { index, animeInfo ->
-            val logger = LoggerFactory.getLogger("anime crawler")
-            logger.info("title: ${animeInfo.title}, delay: ${animeInfo.delay}")
-
             writeOneAnimeInfo(
                 bufferedImage,
                 animeInfo,

@@ -131,7 +131,7 @@ class NewsCrawler(private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
                 newsTextStringBuilder.append(pStr)
                 newsTextStringBuilder.append('\n')
             } else {
-                var i = 0;
+                var i = 0
                 while (i < pStr.length) {
                     newsTextStringBuilder.append(pStr.subSequence(i, min(i + lineLen, pStr.length)))
                     i += lineLen
