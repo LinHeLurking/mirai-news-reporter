@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "online.ruin_of_future"
-version = "1.4.6"
+version = "1.4.7"
 
 repositories {
     maven(url = "https://maven.aliyun.com/repository/public")
@@ -23,6 +23,11 @@ dependencies {
     implementation("org.jsoup:jsoup:1.15.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
+}
+
+tasks.compileJava {
+    sourceCompatibility = JavaVersion.VERSION_11.toString()
+    targetCompatibility = JavaVersion.VERSION_11.toString()
 }
 
 tasks.withType<KotlinCompile>().configureEach {
