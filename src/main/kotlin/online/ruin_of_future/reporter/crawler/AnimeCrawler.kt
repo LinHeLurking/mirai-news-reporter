@@ -216,8 +216,7 @@ class AnimeCrawler(
 
     @Throws(Exception::class)
     private suspend fun animeByDate(dateTime: LocalDateTime): ByteArray {
-//        val dateStr = "${dateTime.month.value}-${dateTime.dayOfMonth}"
-        val dateStr = "1-2"
+        val dateStr = "${dateTime.month.value}-${dateTime.dayOfMonth}"
         val rawData = getData()
         val dataOnDate = rawData.result.firstOrNull {
             it.date == dateStr
