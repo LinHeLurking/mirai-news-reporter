@@ -20,18 +20,21 @@ import kotlin.coroutines.coroutineContext
 object NewsChatReply {
     private val newsCrawler = NewsCrawler.INSTANCE
     private suspend fun sendNewsToTarget(contact: Contact, context: CoroutineContext = Dispatchers.Default) {
-        try {
-            if (!newsCrawler.isCacheValid()) {
-                contact.sendMessage(ReporterConfig.waitMessages.random())
-            }
-            val stream = withContext(context) {
+        if (!newsCrawler.isCacheValid()) {
+            contact.sendMessage(ReporterConfig.waitMessages.random())
+        }
+        val stream = withContext(context) {
+            try {
                 ByteArrayInputStream(newsCrawler.newsToday())
+            } catch (e: Throwable) {
+                contact.sendMessage(ReporterConfig.errorMessages.random())
+                ReporterPlugin.logger.error(e)
+                return@withContext null
             }
+        }
+        if (stream != null) {
             contact.sendMessage(ReporterConfig.newsReplyMessages.random())
             contact.sendImage(stream)
-        } catch (e: Exception) {
-            contact.sendMessage(ReporterConfig.errorMessages.random())
-            ReporterPlugin.logger.error(e)
         }
     }
 
@@ -52,6 +55,7 @@ object NewsChatReply {
                     sendNewsToTarget(group, coroutineContext)
                 } else {
                     sender.sendMessage(ReporterConfig.noDisturbingGroupMessages.random())
+                    sendNewsToTarget(sender, coroutineContext)
                 }
             }
         }

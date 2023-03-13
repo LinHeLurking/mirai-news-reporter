@@ -22,27 +22,30 @@ object AnimeChatReply {
     private val animeCrawler = AnimeCrawler.INSTANCE
 
     private suspend fun sendAnimeToTarget(contact: Contact, context: CoroutineContext = Dispatchers.Default) {
-        try {
-            if (!animeCrawler.isCacheValid()) {
-                contact.sendMessage(ReporterConfig.waitMessages.random())
-            }
-            val stream = withContext(context) {
+        if (!animeCrawler.isCacheValid()) {
+            contact.sendMessage(ReporterConfig.waitMessages.random())
+        }
+        val stream = withContext(context) {
+            try {
                 ByteArrayInputStream(animeCrawler.animeToday())
+            } catch (throwable: Throwable) {
+                when (throwable) {
+                    is NoAnimeException -> {
+                        contact.sendMessage(ReporterConfig.noAnimeMessages.random())
+                        ReporterPlugin.logger.info(throwable)
+                    }
+
+                    else -> {
+                        contact.sendMessage(ReporterConfig.errorMessages.random())
+                        ReporterPlugin.logger.info(throwable)
+                    }
+                }
+                return@withContext null
             }
+        }
+        if (stream != null) {
             contact.sendMessage(ReporterConfig.animeReplyMessages.random())
             contact.sendImage(stream)
-        } catch (e: Exception) {
-            when (e) {
-                is NoAnimeException -> {
-                    contact.sendMessage(ReporterConfig.noAnimeMessages.random())
-                    ReporterPlugin.logger.info(e)
-                }
-
-                else -> {
-                    contact.sendMessage(ReporterConfig.errorMessages.random())
-                    ReporterPlugin.logger.error(e)
-                }
-            }
         }
     }
 
@@ -63,6 +66,7 @@ object AnimeChatReply {
                     sendAnimeToTarget(group, coroutineContext)
                 } else {
                     sender.sendMessage(ReporterConfig.noDisturbingGroupMessages.random())
+                    sendAnimeToTarget(sender, coroutineContext)
                 }
             }
         }
