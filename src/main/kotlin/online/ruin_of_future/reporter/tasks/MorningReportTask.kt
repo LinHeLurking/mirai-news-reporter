@@ -7,8 +7,10 @@ import online.ruin_of_future.reporter.ReporterPlugin
 import online.ruin_of_future.reporter.config.ReporterConfig
 import online.ruin_of_future.reporter.crawler.AnimeCrawler
 import online.ruin_of_future.reporter.crawler.NewsCrawler
+import online.ruin_of_future.reporter.crawler.TouchFishCrawler
 import online.ruin_of_future.reporter.data.AnimeGroupWhiteList
 import online.ruin_of_future.reporter.data.NewsGroupWhiteList
+import online.ruin_of_future.reporter.data.TouchFishGroupWhiteList
 import java.io.ByteArrayInputStream
 import java.util.*
 import kotlin.coroutines.CoroutineContext
@@ -16,6 +18,7 @@ import kotlin.coroutines.CoroutineContext
 class MorningReportTask : TimerTask() {
     private val animeCrawler = AnimeCrawler.INSTANCE
     private val newsCrawler = NewsCrawler.INSTANCE
+    private val touchfishCrawler = TouchFishCrawler.INSTANCE
 
     private suspend fun sendNewsFrom(
         bot: Bot,
@@ -59,6 +62,27 @@ class MorningReportTask : TimerTask() {
         }
     }
 
+    private suspend fun sendTouchFishFrom(
+        bot: Bot,
+        context: CoroutineContext = Dispatchers.Default
+    ) = withContext(context) {
+        for (groupId in TouchFishGroupWhiteList.groupIdsPerBot[bot.id]!!) {
+            try {
+                val group = bot.getGroup(groupId)
+                val touchfishToday = touchfishCrawler.touchfishToday()
+                group?.sendMessage(ReporterConfig.touchfishDailyMessages.random())
+                group?.sendImage(ByteArrayInputStream(touchfishToday))
+                ReporterPlugin.logger.info(
+                    "Daily touchfish push to group " +
+                            (group?.name ?: "<No group of ${groupId}> from ${bot.id}")
+                )
+            } catch (e: Exception) {
+                ReporterPlugin.logger.error(e)
+            }
+            delay(100)
+        }
+    }
+
     override fun run() = runBlocking {
         Bot.instances.forEach {
             if (it.id in NewsGroupWhiteList.groupIdsPerBot) {
@@ -69,6 +93,11 @@ class MorningReportTask : TimerTask() {
             if (it.id in AnimeGroupWhiteList.groupIdsPerBot) {
                 launch {
                     sendAnimeFrom(it, this@runBlocking.coroutineContext)
+                }
+            }
+            if (it.id in TouchFishGroupWhiteList.groupIdsPerBot) {
+                launch {
+                    sendTouchFishFrom(it, this@runBlocking.coroutineContext)
                 }
             }
         }
