@@ -1,16 +1,14 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
-    kotlin("jvm") version "1.5.30"
-    kotlin("plugin.serialization") version "1.5.20"
+    kotlin("jvm") version "1.8.0"
+    kotlin("plugin.serialization") version "1.8.0"
 
-    id("net.mamoe.mirai-console") version "2.7.0"
+    id("net.mamoe.mirai-console") version "2.15.0"
     `maven-publish`
     signing
 }
 
 group = "online.ruin_of_future"
-version = "1.4.7"
+version = "1.5.0"
 
 repositories {
     maven(url = "https://maven.aliyun.com/repository/public")
@@ -26,13 +24,13 @@ dependencies {
 }
 
 tasks.compileJava {
-    sourceCompatibility = JavaVersion.VERSION_11.toString()
-    targetCompatibility = JavaVersion.VERSION_11.toString()
+    sourceCompatibility = JavaVersion.VERSION_17.toString()
+    targetCompatibility = JavaVersion.VERSION_17.toString()
 }
 
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-//        kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
-        jvmTarget = "11"
-    }
-}
+//tasks.withType<KotlinCompile>().configureEach {
+//    kotlinOptions {
+////        kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+//        jvmTarget = "11"
+//    }
+//}

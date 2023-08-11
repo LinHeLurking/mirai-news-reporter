@@ -11,6 +11,7 @@ import online.ruin_of_future.reporter.ReporterPlugin
 import online.ruin_of_future.reporter.data.AnimeGroupWhiteList
 import online.ruin_of_future.reporter.data.GroupWhiteList
 import online.ruin_of_future.reporter.data.NewsGroupWhiteList
+import online.ruin_of_future.reporter.data.TouchFishGroupWhiteList
 
 object WhiteListCommand : CompositeCommand(
     ReporterPlugin, "reporter_list", description = "统一的白名单管理"
@@ -18,12 +19,15 @@ object WhiteListCommand : CompositeCommand(
     private fun getWhiteList(category: String?): List<GroupWhiteList> {
         val animeRegex = Regex("anime|Anime|动画")
         val newsRegex = Regex("news|News|新闻|速报")
+        val touchfishRegex = Regex("TouchFish|touchfish|moyu|摸鱼")
         return if (category == null) {
-            listOf(AnimeGroupWhiteList, NewsGroupWhiteList)
+            listOf(AnimeGroupWhiteList, NewsGroupWhiteList, TouchFishGroupWhiteList)
         } else if (category.matches(animeRegex)) {
             listOf(AnimeGroupWhiteList)
         } else if (category.matches(newsRegex)) {
             listOf(NewsGroupWhiteList)
+        } else if (category.matches(touchfishRegex)){
+            listOf(TouchFishGroupWhiteList)
         } else {
             emptyList()
         }

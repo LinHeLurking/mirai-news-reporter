@@ -45,6 +45,17 @@ object ChatMessageConfigCommand : CompositeCommand(
         sender.sendMessage("设置 newsTriggers 为 $list")
     }
 
+    @SubCommand("touchfishTriggers", "touchfishTrigger")
+    suspend fun setTouchfishTriggers(sender: CommandSender, args: String) {
+        val list = splitList(args)
+        ReporterConfig.touchfishTriggers.clear()
+        list.forEach {
+            ReporterConfig.touchfishTriggers.add(it)
+        }
+
+        sender.sendMessage("设置 touchfishTriggers 为 $list")
+    }
+
     @SubCommand("separators", "separator")
     suspend fun setSeparators(sender: CommandSender, args: String) {
         val list = splitList(args)
@@ -120,6 +131,28 @@ object ChatMessageConfigCommand : CompositeCommand(
         }
 
         sender.sendMessage("设置 newsReplyMessages 为 $list")
+    }
+
+    @SubCommand("touchfishDailyMessages", "touchfishDailyMessage")
+    suspend fun setTouchfishDailyMessages(sender: CommandSender, args: String) {
+        val list = splitList(args)
+        ReporterConfig.touchfishDailyMessages.clear()
+        list.forEach {
+            ReporterConfig.touchfishDailyMessages.add(it)
+        }
+
+        sender.sendMessage("设置 touchfishDailyMessages 为 $list")
+    }
+
+    @SubCommand("touchfishReplyMessages", "touchfishReplyMessage")
+    suspend fun setTouchfishReplyMessages(sender: CommandSender, args: String) {
+        val list = splitList(args)
+        ReporterConfig.touchfishReplyMessages.clear()
+        list.forEach {
+            ReporterConfig.touchfishReplyMessages.add(it)
+        }
+
+        sender.sendMessage("设置 touchfishReplyMessages 为 $list")
     }
 
     @SubCommand("noDisturbingGroupMessages", "noDisturbingGroupMessage")
