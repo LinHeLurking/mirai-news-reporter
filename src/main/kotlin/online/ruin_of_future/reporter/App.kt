@@ -25,7 +25,7 @@ object ReporterPlugin : KotlinPlugin(
         version = "1.5.0",
     ) {
         name("Reporter")
-        author("Sayen")
+        author("LinHeLurking")
     }
 ) {
     private val scheduler = Timer()
