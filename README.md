@@ -78,3 +78,6 @@ Bot 在回复命令时的很多语句，都可以通过 `/reporter_msg` 命令�
 
 摸鱼日历:
 
+![image](https://github.com/fsry/mirai-news-reporter/assets/53202887/df67a2e6-db45-4e5a-9b46-dc2ed8cf6536)
+
+
