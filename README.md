@@ -2,6 +2,8 @@
 
 一个简单的每日新闻速报/番剧速报 mirai-console 插件
 
+> ⚠ 每日新闻的知乎账号已经停更，因此目前每日新闻无法正确获取。
+
 # 项目地址:
 
 https://github.com/LinHeLurking/mirai-news-reporter
