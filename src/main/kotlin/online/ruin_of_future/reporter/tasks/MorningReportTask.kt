@@ -26,14 +26,15 @@ class MorningReportTask : TimerTask() {
     ) = withContext(context) {
         for (groupId in NewsGroupWhiteList.groupIdsPerBot[bot.id]!!) {
             try {
-                val group = bot.getGroup(groupId)
-                val newsToday = newsCrawler.newsToday()
-                group?.sendMessage(ReporterConfig.newsDailyMessages.random())
-                group?.sendImage(ByteArrayInputStream(newsToday))
-                ReporterPlugin.logger.info(
-                    "Daily news push to group " +
-                            (group?.name ?: "<No group of ${groupId}> from ${bot.id}")
-                )
+                // TODO: fix news data
+//                val group = bot.getGroup(groupId)
+//                val newsToday = newsCrawler.newsToday()
+//                group?.sendMessage(ReporterConfig.newsDailyMessages.random())
+//                group?.sendImage(ByteArrayInputStream(newsToday))
+//                ReporterPlugin.logger.info(
+//                    "Daily news push to group " +
+//                            (group?.name ?: "<No group of ${groupId}> from ${bot.id}")
+//                )
             } catch (e: Exception) {
                 ReporterPlugin.logger.error(e)
             }
