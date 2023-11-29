@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "online.ruin_of_future"
-version = "1.5.1"
+version = "1.5.2"
 
 repositories {
     maven(url = "https://maven.aliyun.com/repository/public")
