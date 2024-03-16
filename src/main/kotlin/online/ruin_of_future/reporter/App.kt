@@ -22,7 +22,7 @@ import java.util.*
 object ReporterPlugin : KotlinPlugin(
     JvmPluginDescription(
         id = "online.ruin_of_future.reporter",
-        version = "1.5.2",
+        version = "1.6.0",
     ) {
         name("Reporter")
         author("LinHeLurking")
