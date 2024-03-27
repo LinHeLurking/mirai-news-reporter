@@ -22,7 +22,7 @@ import java.util.*
 object ReporterPlugin : KotlinPlugin(
     JvmPluginDescription(
         id = "online.ruin_of_future.reporter",
-        version = "1.6.0",
+        version = "1.6.1",
     ) {
         name("Reporter")
         author("LinHeLurking")
@@ -41,9 +41,6 @@ object ReporterPlugin : KotlinPlugin(
         AnimeGroupWhiteList.reload()
         TouchFishGroupWhiteList.reload()
 
-//        commands.add(AnimeGroupCommand)
-//        commands.add(NewsGroupCommand)
-//        commands.add(TouchFishGroupCommand)
         commands.add(WhiteListCommand)
         commands.add(ChatMessageConfigCommand)
 
