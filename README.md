@@ -20,11 +20,11 @@ https://github.com/LinHeLurking/mirai-news-reporter
 
 番剧群组白名单，新闻播报群组白名单和摸鱼人日历白名单是分开的三个名单，你可以使用 `/reporter_list` 命令来管理这三个名单。
 该命令允许 `show`, `add`, `remove` 三种后缀。其中 `add`, `remove` 两个后缀需要跟一个群号。
-在群号之后你可以用 `anime`, `news`，`moyu` 来指定操作哪一个白名单（留空表示二者都操作）。
+在群号之后你可以用 `anime`, `news`，`moyu` 来指定操作哪一个白名单（留空表示三者都操作）。
 
 举例如下：
 
-将群号为 123456 的群加入番剧、新闻白名单：
+将群号为 123456 的群加入番剧、新闻和摸鱼人白名单：
 `/reporter_list add 123456`
 
 将群号为 123456 的群加入番剧白名单：
@@ -32,6 +32,9 @@ https://github.com/LinHeLurking/mirai-news-reporter
 
 将群号为 123456 的群加入新闻白名单：
 `/reporter_list add 123456 news`
+
+将群号为 123456 的群加入摸鱼人白名单：
+`/reporter_list add 123456 moyu`
 
 > 更多命令细节可以通过 /help 获取.
 
